@@ -1,3 +1,4 @@
+// karma.conf.js
 module.exports = function (config) {
   config.set({
     basePath: '',
@@ -10,7 +11,7 @@ module.exports = function (config) {
       require('@angular-devkit/build-angular/plugins/karma')
     ],
     client: {
-      clearContext: false
+      clearContext: false // deja los resultados visibles en el navegador
     },
     reporters: ['progress', 'kjhtml', 'coverage'],
     coverageReporter: {
@@ -23,7 +24,13 @@ module.exports = function (config) {
       ],
       fixWebpackSourcePaths: true
     },
-    browsers: ['ChromeHeadless'],
+    browsers: ['ChromeHeadlessNoSandbox'],
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox', '--disable-dev-shm-usage']
+      }
+    },
     singleRun: true,
     restartOnFileChange: false
   });
