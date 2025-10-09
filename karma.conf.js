@@ -9,13 +9,17 @@ module.exports = function (config) {
       require('karma-coverage'),
       require('@angular-devkit/build-angular/plugins/karma')
     ],
-    client: { clearContext: false },
+    client: {
+      clearContext: false
+    },
     reporters: ['progress', 'kjhtml', 'coverage'],
     coverageReporter: {
       dir: require('path').join(__dirname, './coverage'),
+      subdir: '.',
       reporters: [
-        { type: 'json-summary', subdir: '.', file: 'coverage-final.json' },
-        { type: 'lcovonly', subdir: '.', file: 'lcov.info' }
+        { type: 'json-summary', file: 'coverage-final.json' },
+        { type: 'lcovonly', file: 'lcov.info' },
+        { type: 'text-summary' }
       ],
       fixWebpackSourcePaths: true
     },
