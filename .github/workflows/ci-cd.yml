@@ -6,6 +6,10 @@ on:
   push:
     branches: [main, develop]
 
+permissions:
+  contents: read
+  id-token: write
+
 env:
   # === Config del servicio en este mismo repo ===
   SERVICE_NAME: ms-web-app
