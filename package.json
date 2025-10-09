@@ -7,7 +7,7 @@
     "serve:ssr:ms-app-web": "node dist/ms-app-web/server/server.mjs",
     "start": "ng serve",
     "build": "ng build --configuration production",
-    "lint": "eslint . --ext .ts,.html",
+    "lint": "eslint .",
     "test": "ng test --watch=false --browsers=ChromeHeadless --code-coverage"
   },
   "prettier": {
