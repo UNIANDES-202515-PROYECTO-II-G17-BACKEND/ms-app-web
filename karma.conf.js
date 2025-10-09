@@ -10,16 +10,15 @@ module.exports = function (config) {
       require('karma-coverage'),
       require('@angular-devkit/build-angular/plugins/karma')
     ],
-    client: {
-      clearContext: false // deja los resultados visibles en el navegador
-    },
+    client: { clearContext: false },
     reporters: ['progress', 'kjhtml', 'coverage'],
     coverageReporter: {
+      // Escribe SIEMPRE en ./coverage (sin subcarpetas)
       dir: require('path').join(__dirname, './coverage'),
       subdir: '.',
       reporters: [
-        { type: 'json-summary', file: 'coverage-final.json' },
-        { type: 'lcovonly', file: 'lcov.info' },
+        { type: 'json-summary', file: 'coverage-final.json' }, // <-- el que busca tu workflow
+        { type: 'lcovonly',     file: 'lcov.info' },
         { type: 'text-summary' }
       ],
       fixWebpackSourcePaths: true
