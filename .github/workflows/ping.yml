@@ -1,0 +1,9 @@
+name: ping
+on:
+  push:
+    branches: [main, master]
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Hola, sí se disparó en $GITHUB_REF"
