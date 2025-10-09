@@ -1,8 +1,8 @@
-name: ci-cd-ms-web-app
-
+name: ci-cd
 on:
   pull_request:
     branches: [main, develop]
+    types: [opened, synchronize, reopened, ready_for_review]
   push:
     branches: [main, develop]
 
@@ -10,159 +10,10 @@ permissions:
   contents: read
   id-token: write
 
-env:
-  # === Config del servicio en este mismo repo ===
-  SERVICE_NAME: ms-web-app
-  NODE_VERSION: '24'
-  COV_MIN: '80'
-  REGION:       ${{ vars.REGION }}
-  PROJECT_ID:   ${{ vars.PROJECT_ID }}
-  CLOUD_RUN_SA: ${{ vars.CLOUD_RUN_SA }}
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ env.SERVICE_NAME }}
-  cancel-in-progress: true
-
 jobs:
-  ci:
-    name: Lint & Test & Coverage
-    runs-on: ubuntu-latest
-    if: |
-      (github.event_name == 'pull_request' &&
-       (github.base_ref == 'main' || github.base_ref == 'develop')) ||
-      (github.event_name == 'push' &&
-       (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'))
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: package-lock.json
-
-      - name: Install deps
-        run: npm ci
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Test (with coverage)
-        run: npm run test
-
-      # karma-coverage genera coverage/coverage-final.json (o lcov)
-      - name: Enforce coverage >= ${{ env.COV_MIN }}%
-        run: |
-          FILE=$(find . -name coverage-final.json | head -n 1)
-          if [ -z "$FILE" ]; then
-            echo "coverage-final.json no encontrado. ¿Está karma-coverage configurado?"
-            exit 1
-          fi
-          COVER=$(node -pe "const f=require('$FILE'); Math.round((f.total?.lines?.pct) ?? f.total?.lines ?? 0)")
-          echo "Coverage: ${COVER}%"
-          if [ "$COVER" -lt "${{ env.COV_MIN }}" ]; then
-            echo "FAIL: coverage below threshold"
-            exit 1
-          fi
-
-      - name: Upload coverage
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-${{ github.sha }}
-          path: |
-            **/coverage*
-          if-no-files-found: ignore
-
-  cd:
-    name: Build Image (& optional Deploy)
-    needs: ci
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      # --- Auth GCP (WIF) ---
-      - name: Auth to GCP (WIF)
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
-          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
-
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-
-      # --- Build docker image ---
-      - name: Docker login to Artifact Registry
-        run: gcloud auth configure-docker "${{ env.REGION }}-docker.pkg.dev" --quiet
-
-      - name: Build image
-        env:
-          IMAGE_REPO: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/project-images/${{ env.SERVICE_NAME }}
-        run: |
-          TAG=$(git rev-parse --short HEAD)
-          IMAGE="${IMAGE_REPO}:${TAG}"
-          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
-          docker build -t "$IMAGE" .
-
-      # -------------------- OPCIONAL: publicar y desplegar --------------------
-      # - name: Push image
-      #   run: docker push "$IMAGE"
-      #
-      # - name: Check runtime SA exists
-      #   run: |
-      #     gcloud iam service-accounts describe "${{ env.CLOUD_RUN_SA }}" \
-      #       --project "${{ env.PROJECT_ID }}" \
-      #       --format="value(email)"
-      #
-      # - name: Deploy to Cloud Run
-      #   run: |
-      #     gcloud run deploy "${{ env.SERVICE_NAME }}" \
-      #       --project "${{ env.PROJECT_ID }}" \
-      #       --region  "${{ env.REGION }}" \
-      #       --image   "${IMAGE}" \
-      #       --service-account "${{ env.CLOUD_RUN_SA }}" \
-      #       --allow-unauthenticated
-      #
-      # ---- Blue/Green (tags) ----
-      # - name: Pick next color (flip blue/green)
-      #   id: pick
-      #   run: |
-      #     SVC="${{ env.SERVICE_NAME }}"
-      #     CUR=$(gcloud run services describe "$SVC" --region "${{ env.REGION }}" \
-      #           --format='value(status.trafficStatuses[?percent=100].tag)' || true)
-      #     if [ "$CUR" = "blue" ]; then NEXT="green"; else NEXT="blue"; fi
-      #     echo "NEXT_TAG=$NEXT" >> $GITHUB_ENV
-      #
-      # - name: Deploy new revision (no traffic)
-      #   run: |
-      #     gcloud run deploy "${{ env.SERVICE_NAME }}" \
-      #       --project "${{ env.PROJECT_ID }}" \
-      #       --region  "${{ env.REGION }}" \
-      #       --image   "${IMAGE}" \
-      #       --tag     "${NEXT_TAG}" \
-      #       --no-traffic \
-      #       --quiet
-      #
-      # - name: Smoke test on tagged URL
-      #   run: |
-      #     URL=$(gcloud run services describe "${{ env.SERVICE_NAME }}" --region "${{ env.REGION }}" \
-      #           --format="value(status.trafficStatuses[?tag='${NEXT_TAG}'].url)")
-      #     echo "Testing $URL/health ..."
-      #     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL/health")
-      #     echo "Status: $HTTP_STATUS"
-      #     test "$HTTP_STATUS" = "200"
-      #
-      # - name: Promote traffic to new color
-      #   run: |
-      #     gcloud run services update-traffic "${{ env.SERVICE_NAME }}" \
-      #       --project "${{ env.PROJECT_ID }}" \
-      #       --region  "${{ env.REGION }}" \
-      #       --to-tags "${NEXT_TAG}=100" \
-      #       --quiet
+  pipeline:
+    uses: UNIANDES-202515-PROYECTO-II-G17-BACKEND/.github/workflows/frontend-service.yml@main
+    with:
+      service_name: ${{ github.event.repository.name }}
+      node_version: '20'
+    secrets: inherit
