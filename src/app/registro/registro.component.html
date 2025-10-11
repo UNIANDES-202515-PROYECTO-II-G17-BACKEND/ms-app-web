@@ -1,3 +1,72 @@
-<p>
-  registro works!
-</p>
+<div class="flex align-items-center justify-content-center min-h-screen" style="background-color: #f0f0f0;">
+  <div class="col-12 md:col-4 p-4">
+
+    <div class="text-center mb-5">
+      <img src="/images/logo.png" alt="MediSupply" height="280">
+    </div>
+
+    <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+
+      <mat-form-field appearance="outline" class="w-full mb-3">
+        <mat-label>Nombre institución</mat-label>
+        <input matInput formControlName="nombreInstitucion">
+        <mat-error *ngIf="registroForm.get('nombreInstitucion')?.hasError('required')">
+          Nombre de institución es requerido
+        </mat-error>
+        <mat-error *ngIf="registroForm.get('nombreInstitucion')?.hasError('minlength')">
+          Mínimo 3 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full mb-3">
+        <mat-label>Usuario</mat-label>
+        <input matInput formControlName="usuario">
+        <mat-error *ngIf="registroForm.get('usuario')?.hasError('required')">
+          Usuario es requerido
+        </mat-error>
+        <mat-error *ngIf="registroForm.get('usuario')?.hasError('minlength')">
+          Mínimo 3 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full mb-3">
+        <mat-label>Contraseña</mat-label>
+        <input matInput type="password" formControlName="password">
+        <mat-error *ngIf="registroForm.get('password')?.hasError('required')">
+          Contraseña es requerida
+        </mat-error>
+        <mat-error *ngIf="registroForm.get('password')?.hasError('minlength')">
+          Mínimo 6 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full mb-4">
+        <mat-label>Confirmación contraseña</mat-label>
+        <input matInput type="password" formControlName="confirmPassword">
+        <mat-error *ngIf="registroForm.get('confirmPassword')?.hasError('required')">
+          Confirmación de contraseña es requerida
+        </mat-error>
+        <mat-error *ngIf="passwordMismatch">
+          Las contraseñas no coinciden
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Mensaje de validación global -->
+      <div class="mb-3" *ngIf="showPasswordMismatchMessage">
+        <small style="color: red;">
+          Las contraseñas no coinciden. Verifica que sean iguales.
+        </small>
+      </div>
+
+      <button matButton="filled" type="submit" class="w-full mb-3" [disabled]="registroForm.invalid || isLoading">
+        <span *ngIf="!isLoading">Enviar</span>
+        <span *ngIf="isLoading">Enviando...</span>
+      </button>
+
+      <div class="text-center">
+        <a routerLink="/login">Regresar</a>
+      </div>
+
+    </form>
+  </div>
+</div>
