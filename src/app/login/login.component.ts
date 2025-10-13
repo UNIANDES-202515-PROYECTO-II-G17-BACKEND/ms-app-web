@@ -71,9 +71,8 @@ export class LoginComponent implements OnInit {
           this.state.isLoading = false;
           this.state.user = response.user;
 
-          // TODO: Navegar a /home cuando exista la ruta
-          // this.router.navigate(['/home']);
-          alert(`¡Bienvenido ${response.user.nombre}! (Pendiente: crear ruta /home)`);
+          // Navegar al home después del login exitoso
+          this.router.navigate(['/home']);
         },
         error: (error: any) => {
           console.error('Error en login:', error);

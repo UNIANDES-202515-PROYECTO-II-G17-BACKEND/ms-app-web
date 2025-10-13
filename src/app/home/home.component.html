@@ -1,0 +1,68 @@
+<div class="home-container">
+  <!-- Panel lateral izquierdo -->
+  <aside class="sidebar">
+    <!-- Logo y título -->
+    <div class="sidebar-header">
+      <img src="/images/logo.png" alt="MediSupply" class="logo">
+    </div>
+
+    <!-- Menú de navegación -->
+    <nav class="sidebar-nav">
+      <ul class="nav-list">
+        <li *ngFor="let item of menuItems" class="nav-item">
+
+          <!-- Menú con submenús -->
+          <div *ngIf="item.subItems; else singleItem" class="menu-group">
+            <button class="nav-link menu-toggle" (click)="toggleMenu(item.key)">
+              <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+              <span class="menu-label">{{ item.label }}</span>
+              <mat-icon class="expand-icon" [class.expanded]="isMenuExpanded(item.key)">
+                expand_more
+              </mat-icon>
+            </button>
+
+            <ul class="submenu" [class.expanded]="isMenuExpanded(item.key)">
+              <li *ngFor="let subItem of item.subItems" class="submenu-item">
+                <a [routerLink]="subItem.route" routerLinkActive="active" class="submenu-link">
+                  {{ subItem.label }}
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Menú sin submenús -->
+          <ng-template #singleItem>
+            <a [routerLink]="item.route" routerLinkActive="active" class="nav-link" (click)="navigateTo(item.route!)">
+              <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+              {{ item.label }}
+            </a>
+          </ng-template>
+
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Info del usuario y logout -->
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <mat-icon class="user-avatar">{{ usuario.avatar }}</mat-icon>
+        <span class="user-name">{{ usuario.nombre }}</span>
+      </div>
+      <button matButton="filled" class="logout-btn" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Salida
+      </button>
+    </div>
+  </aside>
+
+  <!-- Área principal de contenido -->
+  <main class="main-content">
+    <!-- Logo centrado por defecto -->
+    <div class="welcome-area">
+      <img src="/images/logo.png" alt="MediSupply" class="main-logo">
+    </div>
+
+    <!-- Aquí se cargarán los componentes de las rutas -->
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,0 +1,103 @@
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+
+@Component({
+  selector: 'app-home',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    RouterOutlet,
+    MatIconModule,
+    MatButtonModule
+  ],
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css']
+})
+export class HomeComponent implements OnInit {
+
+  // Datos del usuario (mockup)
+  usuario = {
+    nombre: 'Carlos Alberto Camargo',
+    avatar: 'person'
+  };
+
+  // Estado de expansión de menús
+  expandedMenus: { [key: string]: boolean } = {};
+
+  // Opciones del menú con submenús
+  menuItems = [
+    {
+      label: 'Proveedores',
+      icon: 'business',
+      key: 'proveedores',
+      subItems: [
+        { label: 'Registro de proveedores', route: '/home/proveedores/registro' },
+        { label: 'Carga de productos individual', route: '/home/proveedores/carga-individual' },
+        { label: 'Carga de productos masivo', route: '/home/proveedores/carga-masiva' }
+      ]
+    },
+    {
+      label: 'Vendedores',
+      icon: 'people',
+      key: 'vendedores',
+      subItems: [
+        { label: 'Registro de vendedores', route: '/home/vendedores/registro' },
+        { label: 'Creación de plan de venta', route: '/home/vendedores/plan-venta' }
+      ]
+    },
+    {
+      label: 'Consulta de productos',
+      icon: 'search',
+      key: 'productos',
+      route: '/home/productos' // Sin submenús
+    },
+    {
+      label: 'Pedidos',
+      icon: 'shopping_cart',
+      key: 'pedidos',
+      subItems: [
+        { label: 'Consulta de pedidos', route: '/home/pedidos/consulta' },
+        { label: 'Generar ruta', route: '/home/pedidos/generar-ruta' },
+        { label: 'Crear pedido', route: '/home/pedidos/crear' },
+        { label: 'Ver estado de pedido', route: '/home/pedidos/estado' }
+      ]
+    },
+    {
+      label: 'Reportes',
+      icon: 'assessment',
+      key: 'reportes',
+      route: '/home/reportes' // Sin submenús
+    }
+  ];
+
+  constructor(private router: Router) { }
+
+  ngOnInit(): void {
+  }
+
+  // Método para expandir/contraer menú
+  toggleMenu(menuKey: string): void {
+    this.expandedMenus[menuKey] = !this.expandedMenus[menuKey];
+  }
+
+  // Verificar si un menú está expandido
+  isMenuExpanded(menuKey: string): boolean {
+    return this.expandedMenus[menuKey] || false;
+  }
+
+  // Navegar a ruta directa (sin submenús)
+  navigateTo(route: string): void {
+    this.router.navigate([route]);
+  }
+
+  // Método para logout
+  logout(): void {
+    console.log('Cerrando sesión...');
+    // TODO: Limpiar tokens, datos de sesión, etc.
+    this.router.navigate(['/login']);
+  }
+}
