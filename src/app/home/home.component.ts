@@ -94,6 +94,11 @@ export class HomeComponent implements OnInit {
     this.router.navigate([route]);
   }
 
+  // Verificar si hay una ruta activa (para ocultar el logo)
+  hasActiveRoute(): boolean {
+    return this.router.url !== '/home';
+  }
+
   // Método para logout
   logout(): void {
     console.log('Cerrando sesión...');
