@@ -5,7 +5,9 @@ import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RegistroService } from './registro.service';
+import { PopupComponent } from '../shared/popup/popup.component';
 import {
   RegistroRequest,
   RegistroResponse,
@@ -21,6 +23,7 @@ import {
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatDialogModule,
     RouterModule
   ],
   templateUrl: './registro.component.html',
@@ -39,13 +42,15 @@ export class RegistroComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private registroService: RegistroService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
     this.registroForm = this.fb.group({
-      nombreInstitucion: ['', [Validators.required, Validators.minLength(3)]],
-      usuario: ['', [Validators.required, Validators.minLength(3)]],
+      institution_name: ['', [Validators.required, Validators.minLength(3)]],
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      role: ['admin', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]]
     }, {
@@ -74,10 +79,10 @@ export class RegistroComponent implements OnInit {
 
       const formValue = this.registroForm.value;
       const registroRequest: RegistroRequest = {
-        nombreInstitucion: formValue.nombreInstitucion || '',
-        usuario: formValue.usuario || '',
-        password: formValue.password || '',
-        confirmPassword: formValue.confirmPassword || ''
+        institution_name: formValue.institution_name || '',
+        username: formValue.username || '',
+        role: formValue.role || 'admin',
+        password: formValue.password || ''
       };
 
       this.registroService.registro(registroRequest).subscribe({
@@ -86,15 +91,39 @@ export class RegistroComponent implements OnInit {
           this.state.isLoading = false;
           this.state.success = true;
 
-          alert(`¡${response.message}!`);
-          // Redirigir al login después del registro exitoso
-          this.router.navigate(['/login']);
+          // Mostrar popup de éxito
+          const dialogRef = this.dialog.open(PopupComponent, {
+            data: {
+              type: 'success',
+              message: response.message || '¡Registro exitoso!'
+            }
+          });
+
+          // Redirigir al login después de cerrar el popup
+          dialogRef.afterClosed().subscribe(() => {
+            this.router.navigate(['/login']);
+          });
         },
         error: (error: any) => {
           console.error('Error en registro:', error);
           this.state.isLoading = false;
-          this.state.error = 'Error al registrar la cuenta. Inténtalo de nuevo.';
-          alert(this.state.error);
+
+          // Extraer mensaje de error de la API
+          const errorMessage = error.error?.detail || 'Error al registrar la cuenta. Inténtalo de nuevo.';
+          this.state.error = errorMessage;
+
+          // Mostrar popup de error
+          const dialogRef = this.dialog.open(PopupComponent, {
+            data: {
+              type: 'error',
+              message: errorMessage
+            }
+          });
+
+          // Redirigir al login después de cerrar el popup
+          dialogRef.afterClosed().subscribe(() => {
+            this.router.navigate(['/login']);
+          });
         }
       });
     }
@@ -121,13 +150,4 @@ export class RegistroComponent implements OnInit {
            confirmPassword?.touched || false;
   }
 
-  // Helper para debugear el estado del formulario
-  get formDebug() {
-    return {
-      valid: this.registroForm.valid,
-      invalid: this.registroForm.invalid,
-      errors: this.registroForm.errors,
-      values: this.registroForm.value
-    };
-  }
 }

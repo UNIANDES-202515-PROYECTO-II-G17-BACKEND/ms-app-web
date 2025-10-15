@@ -1,14 +1,15 @@
 // Interfaces para el formulario de registro
 export interface RegistroRequest {
-  nombreInstitucion: string;
-  usuario: string;
+  institution_name: string;
+  username: string;
+  role: string;
   password: string;
-  confirmPassword: string;
 }
 
 export interface RegistroFormData {
-  nombreInstitucion: string;
-  usuario: string;
+  institution_name: string;
+  username: string;
+  role: string;
   password: string;
   confirmPassword: string;
 }

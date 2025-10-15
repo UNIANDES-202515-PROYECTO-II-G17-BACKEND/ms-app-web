@@ -9,24 +9,32 @@
 
       <mat-form-field appearance="outline" class="w-full mb-3">
         <mat-label>Nombre institución</mat-label>
-        <input matInput formControlName="nombreInstitucion">
-        <mat-error *ngIf="registroForm.get('nombreInstitucion')?.hasError('required')">
+        <input matInput formControlName="institution_name">
+        <mat-error *ngIf="registroForm.get('institution_name')?.hasError('required')">
           Nombre de institución es requerido
         </mat-error>
-        <mat-error *ngIf="registroForm.get('nombreInstitucion')?.hasError('minlength')">
+        <mat-error *ngIf="registroForm.get('institution_name')?.hasError('minlength')">
           Mínimo 3 caracteres
         </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-full mb-3">
         <mat-label>Usuario</mat-label>
-        <input matInput formControlName="usuario">
-        <mat-error *ngIf="registroForm.get('usuario')?.hasError('required')">
+        <input matInput formControlName="username">
+        <mat-error *ngIf="registroForm.get('username')?.hasError('required')">
           Usuario es requerido
         </mat-error>
-        <mat-error *ngIf="registroForm.get('usuario')?.hasError('minlength')">
+        <mat-error *ngIf="registroForm.get('username')?.hasError('minlength')">
           Mínimo 3 caracteres
         </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full mb-3">
+        <mat-label>Rol</mat-label>
+        <select matNativeControl formControlName="role">
+          <option value="admin">Administrador</option>
+          <option value="seller">Vendedor</option>
+        </select>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-full mb-3">
