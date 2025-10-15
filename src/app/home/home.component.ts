@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -19,9 +19,9 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class HomeComponent implements OnInit {
 
-  // Datos del usuario (mockup)
+  // Datos del usuario
   usuario = {
-    nombre: 'Carlos Alberto Camargo',
+    nombre: '',
     avatar: 'person'
   };
 
@@ -74,9 +74,26 @@ export class HomeComponent implements OnInit {
     }
   ];
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) { }
 
   ngOnInit(): void {
+    // Solo acceder a localStorage en el navegador (no en SSR)
+    if (isPlatformBrowser(this.platformId)) {
+      // Obtener el username del token JWT
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          this.usuario.nombre = payload.username || 'Usuario';
+        } catch (error) {
+          console.error('Error al decodificar token:', error);
+          this.usuario.nombre = 'Usuario';
+        }
+      }
+    }
   }
 
   // Método para expandir/contraer menú
@@ -101,8 +118,10 @@ export class HomeComponent implements OnInit {
 
   // Método para logout
   logout(): void {
-    console.log('Cerrando sesión...');
-    // TODO: Limpiar tokens, datos de sesión, etc.
+    // Limpiar token y navegar al login (solo en browser)
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('access_token');
+    }
     this.router.navigate(['/login']);
   }
 }

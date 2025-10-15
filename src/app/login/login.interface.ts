@@ -1,20 +1,20 @@
 // Interfaces para el formulario de login
 export interface LoginRequest {
-  usuario: string;
+  username: string;
   password: string;
 }
 
 export interface LoginFormData {
-  usuario: string;
+  username: string;
   password: string;
 }
 
 // Interfaces para la respuesta del servicio
 export interface LoginResponse {
-  success: boolean;
-  token: string;
-  user: User;
-  message?: string;
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  expires_in: number;
 }
 
 export interface LoginError {

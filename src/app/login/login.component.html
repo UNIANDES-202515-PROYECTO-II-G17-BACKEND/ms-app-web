@@ -9,8 +9,8 @@
 
       <mat-form-field appearance="outline" class="w-full mb-3">
         <mat-label>Usuario</mat-label>
-        <input matInput formControlName="usuario">
-        <mat-error *ngIf="loginForm.get('usuario')?.hasError('required')">
+        <input matInput formControlName="username">
+        <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
           Usuario es requerido
         </mat-error>
       </mat-form-field>

@@ -5,13 +5,12 @@ import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LoginService } from './login.service';
+import { PopupComponent } from '../shared/popup/popup.component';
 import {
   LoginRequest,
-  LoginResponse,
-  LoginFormData,
-  LoginState,
-  User
+  LoginResponse
 } from './login.interface';
 
 @Component({
@@ -23,6 +22,7 @@ import {
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatDialogModule,
     RouterModule
   ],
   templateUrl: './login.component.html',
@@ -30,26 +30,26 @@ import {
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup<{
-    usuario: any;
+    username: any;
     password: any;
   }>;
 
-  // Estado del componente usando interface
-  state: LoginState = {
+  // Estado del componente
+  state = {
     isLoading: false,
-    error: null,
-    user: null
+    error: null as string | null
   };
 
   constructor(
     private fb: FormBuilder,
     private loginService: LoginService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit() {
     this.loginForm = this.fb.group({
-      usuario: ['', Validators.required],
+      username: ['', Validators.required],
       password: ['', Validators.required]
     });
   }
@@ -61,24 +61,44 @@ export class LoginComponent implements OnInit {
 
       const formValue = this.loginForm.value;
       const loginRequest: LoginRequest = {
-        usuario: formValue.usuario || '',
+        username: formValue.username || '',
         password: formValue.password || ''
       };
 
       this.loginService.login(loginRequest).subscribe({
         next: (response: LoginResponse) => {
-          console.log('Login exitoso:', response);
           this.state.isLoading = false;
-          this.state.user = response.user;
 
-          // Navegar al home después del login exitoso
-          this.router.navigate(['/home']);
+          // Guardar el token
+          localStorage.setItem('access_token', response.access_token);
+
+          // Mostrar popup de éxito
+          const dialogRef = this.dialog.open(PopupComponent, {
+            data: {
+              type: 'success',
+              message: '¡Login exitoso! Bienvenido a MediSupply.'
+            }
+          });
+
+          // Navegar al home después de cerrar el popup
+          dialogRef.afterClosed().subscribe(() => {
+            this.router.navigate(['/home']);
+          });
         },
         error: (error: any) => {
-          console.error('Error en login:', error);
           this.state.isLoading = false;
-          this.state.error = 'Error de autenticación. Verifica tus credenciales.';
-          alert(this.state.error);
+
+          // Extraer mensaje de error de la API
+          const errorMessage = error.error?.detail || 'Error de autenticación. Verifica tus credenciales.';
+          this.state.error = errorMessage;
+
+          // Mostrar popup de error
+          this.dialog.open(PopupComponent, {
+            data: {
+              type: 'error',
+              message: errorMessage
+            }
+          });
         }
       });
     }
