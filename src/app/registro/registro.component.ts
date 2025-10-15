@@ -87,7 +87,6 @@ export class RegistroComponent implements OnInit {
 
       this.registroService.registro(registroRequest).subscribe({
         next: (response: RegistroResponse) => {
-          console.log('Registro exitoso:', response);
           this.state.isLoading = false;
           this.state.success = true;
 
@@ -105,7 +104,6 @@ export class RegistroComponent implements OnInit {
           });
         },
         error: (error: any) => {
-          console.error('Error en registro:', error);
           this.state.isLoading = false;
 
           // Extraer mensaje de error de la API
