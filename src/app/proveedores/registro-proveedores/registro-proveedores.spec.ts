@@ -27,7 +27,7 @@ describe('RegistroProveedores - Unit Tests', () => {
       mockRouter,
       mockDialog
     );
-    
+
     // Llamar ngOnInit manualmente
     component.ngOnInit();
   });
@@ -67,7 +67,7 @@ describe('RegistroProveedores - Unit Tests', () => {
   it('should validate required fields', () => {
     const form = component.proveedorForm;
     expect(form.valid).toBeFalse();
-    
+
     expect(form.get('nombre')?.hasError('required')).toBeTrue();
     expect(form.get('tipo_de_persona')?.hasError('required')).toBeTrue();
     expect(form.get('documento')?.hasError('required')).toBeTrue();
@@ -81,70 +81,70 @@ describe('RegistroProveedores - Unit Tests', () => {
 
   it('should validate email format', () => {
     const emailControl = component.proveedorForm.get('email');
-    
+
     emailControl?.setValue('invalid-email');
     expect(emailControl?.hasError('email')).toBeTrue();
-    
+
     emailControl?.setValue('valid@email.com');
     expect(emailControl?.hasError('email')).toBeFalse();
   });
 
   it('should validate telefono pattern', () => {
     const telefonoControl = component.proveedorForm.get('telefono');
-    
+
     // Invalid phone
     telefonoControl?.setValue('123');
     expect(telefonoControl?.hasError('pattern')).toBeTrue();
-    
+
     // Valid phone
     telefonoControl?.setValue('+573001234567');
     expect(telefonoControl?.hasError('pattern')).toBeFalse();
-    
+
     telefonoControl?.setValue('3001234567');
     expect(telefonoControl?.hasError('pattern')).toBeFalse();
   });
 
   it('should validate pagina_web URL pattern', () => {
     const webControl = component.proveedorForm.get('pagina_web');
-    
+
     // Invalid URL
     webControl?.setValue('not-a-url');
     expect(webControl?.hasError('pattern')).toBeTrue();
-    
+
     // Valid URLs
     webControl?.setValue('https://www.example.com');
     expect(webControl?.hasError('pattern')).toBeFalse();
-    
+
     webControl?.setValue('http://example.com');
     expect(webControl?.hasError('pattern')).toBeFalse();
   });
 
   it('should validate minimum length for nombre', () => {
     const nombreControl = component.proveedorForm.get('nombre');
-    
+
     nombreControl?.setValue('ab');
     expect(nombreControl?.hasError('minlength')).toBeTrue();
-    
+
     nombreControl?.setValue('Valid Name');
     expect(nombreControl?.hasError('minlength')).toBeFalse();
   });
 
   it('should validate minimum length for documento', () => {
     const docControl = component.proveedorForm.get('documento');
-    
+
     docControl?.setValue('1234');
     expect(docControl?.hasError('minlength')).toBeTrue();
-    
+
     docControl?.setValue('12345');
     expect(docControl?.hasError('minlength')).toBeFalse();
   });
 
   it('should validate minimum length for direccion', () => {
     const dirControl = component.proveedorForm.get('direccion');
-    
+
     dirControl?.setValue('Cra 1');
     expect(dirControl?.hasError('minlength')).toBeTrue();
-    
+
     dirControl?.setValue('Carrera 1 #23-45');
     expect(dirControl?.hasError('minlength')).toBeFalse();
   });
@@ -168,13 +168,13 @@ describe('RegistroProveedores - Unit Tests', () => {
       activo: true
     });
 
-    mockProveedorService.registrarProveedor.and.returnValue(of({ 
+    mockProveedorService.registrarProveedor.and.returnValue(of({
       success: true,
       message: 'Proveedor registrado'
     }));
-    
+
     component.onSubmit();
-    
+
     expect(mockProveedorService.registrarProveedor).toHaveBeenCalledWith({
       nombre: 'Proveedor Test',
       tipo_de_persona: 'JURIDICA',
@@ -209,9 +209,9 @@ describe('RegistroProveedores - Unit Tests', () => {
     };
 
     mockProveedorService.registrarProveedor.and.returnValue(of(mockResponse));
-    
+
     component.onSubmit();
-    
+
     expect(mockDialog.open).toHaveBeenCalled();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
     expect(component.state.isLoading).toBeFalse();
@@ -238,9 +238,9 @@ describe('RegistroProveedores - Unit Tests', () => {
     };
 
     mockProveedorService.registrarProveedor.and.returnValue(throwError(() => mockError));
-    
+
     component.onSubmit();
-    
+
     expect(component.state.isLoading).toBeFalse();
     expect(component.state.error).toBe('El proveedor ya existe');
     expect(mockDialog.open).toHaveBeenCalled();
@@ -268,9 +268,9 @@ describe('RegistroProveedores - Unit Tests', () => {
     };
 
     mockProveedorService.registrarProveedor.and.returnValue(throwError(() => mockError));
-    
+
     component.onSubmit();
-    
+
     expect(component.state.error).toBe('Error de validación');
   });
 
@@ -291,15 +291,15 @@ describe('RegistroProveedores - Unit Tests', () => {
     const mockError = { status: 500 };
 
     mockProveedorService.registrarProveedor.and.returnValue(throwError(() => mockError));
-    
+
     component.onSubmit();
-    
+
     expect(component.state.error).toBe('Error al registrar el proveedor. Inténtalo de nuevo.');
   });
 
   it('should test loading state getter', () => {
     expect(component.isLoading).toBeFalse();
-    
+
     component.state.isLoading = true;
     expect(component.isLoading).toBeTrue();
   });
@@ -311,7 +311,7 @@ describe('RegistroProveedores - Unit Tests', () => {
 
   it('should reset state on new submission', () => {
     component.state.error = 'Previous error';
-    
+
     component.proveedorForm.patchValue({
       nombre: 'Proveedor Test',
       tipo_de_persona: 'JURIDICA',
@@ -325,12 +325,12 @@ describe('RegistroProveedores - Unit Tests', () => {
       activo: true
     });
 
-    mockProveedorService.registrarProveedor.and.returnValue(of({ 
+    mockProveedorService.registrarProveedor.and.returnValue(of({
       success: true
     }));
-    
+
     component.onSubmit();
-    
+
     expect(component.state.error).toBeNull();
   });
 });
