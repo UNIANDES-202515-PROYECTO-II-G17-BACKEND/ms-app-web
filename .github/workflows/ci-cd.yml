@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   pipeline:
-    uses: UNIANDES-202515-PROYECTO-II-G17-BACKEND/.github/workflows/frontend-service.yml@main
+    uses: UNIANDES-202515-PROYECTO-II-G17-BACKEND/.github/.github/workflows/frontend-service.yml@main
     with:
       service_name: ${{ github.event.repository.name }}
       node_version: '20'
