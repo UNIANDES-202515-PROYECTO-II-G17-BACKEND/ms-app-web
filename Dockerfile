@@ -3,10 +3,11 @@ FROM node:24-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci
+# No tocamos tus deps locales (nvm). En contenedor, resolvemos peers con flag.
+RUN npm ci --legacy-peer-deps
 
 COPY . .
-# Si tu script de build es "ng build" ya configurado a prod, déjalo:
+# Usa tu script de build existente (SSR/Prerender si lo tienes configurado)
 RUN npm run build
 
 # ====== Etapa 2: NGINX estático con inyección de variables ======
@@ -15,15 +16,17 @@ FROM nginx:stable-alpine
 # Config de NGINX
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copiamos el build
+# Copiamos TODO el dist (incluye /browser y /server y archivos raíz)
 COPY --from=build /app/dist/ms-app-web /usr/share/nginx/html
 
-# ▶ Archivos para generar env.js desde una variable de entorno en runtime
-#   - el script en /docker-entrypoint.d/* se ejecuta automáticamente
-COPY env.template.js /usr/share/nginx/html/assets/env.template.js
+# ▶ Inyección de variables en runtime: generamos assets/env.js
+# Colocamos el template en la carpeta correcta (browser/assets)
+COPY env.template.js /usr/share/nginx/html/browser/assets/env.template.js
+
+# Script que se ejecuta automáticamente al arrancar NGINX en esta imagen
 COPY docker-entrypoint.sh /docker-entrypoint.d/10-gen-env.sh
 RUN chmod +x /docker-entrypoint.d/10-gen-env.sh
 
 EXPOSE 8080
-# Usamos el CMD por defecto de la imagen de nginx (o este)
 CMD ["nginx", "-g", "daemon off;"]
+
