@@ -48,11 +48,21 @@ describe('HomeComponent - Unit Tests', () => {
     expect(vendedoresMenu).toBeDefined();
     expect(vendedoresMenu?.subItems).toHaveSize(2);
 
-    // Verificar menú directo
+    // Verificar menú Productos (tiene subItems)
     const productosMenu = component.menuItems.find(item => item.key === 'productos');
     expect(productosMenu).toBeDefined();
-    expect(productosMenu?.route).toBe('/home/productos');
-    expect(productosMenu?.subItems).toBeUndefined();
+    expect(productosMenu?.subItems).toBeDefined();
+    expect(productosMenu?.subItems).toHaveSize(2);
+    expect(productosMenu?.subItems).toEqual([
+      { label: 'Carga individual de productos', route: '/home/productos/carga-individual' },
+      { label: 'Carga masiva de productos', route: '/home/productos/carga-masiva' }
+    ]);
+
+    // Verificar menú Reportes (sin subItems, ruta directa)
+    const reportesMenu = component.menuItems.find(item => item.key === 'reportes');
+    expect(reportesMenu).toBeDefined();
+    expect(reportesMenu?.route).toBe('/home/reportes');
+    expect(reportesMenu?.subItems).toBeUndefined();
   });
 
   it('should decode token and set username on ngOnInit', () => {
