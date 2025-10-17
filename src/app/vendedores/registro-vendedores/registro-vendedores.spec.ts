@@ -294,10 +294,11 @@ describe('RegistroVendedores - Unit Tests', () => {
 
   it('should have correct document types options', () => {
     expect(component.tiposDocumento.length).toBe(4);
-    expect(component.tiposDocumento[0].value).toBe('CEDULA_CIUDADANIA');
+    // Component uses short codes: CC, NIT, PASAPORTE, CE
+    expect(component.tiposDocumento[0].value).toBe('CC');
     expect(component.tiposDocumento[1].value).toBe('NIT');
     expect(component.tiposDocumento[2].value).toBe('PASAPORTE');
-    expect(component.tiposDocumento[3].value).toBe('CEDULA_EXTRANJERIA');
+    expect(component.tiposDocumento[3].value).toBe('CE');
   });
 
   it('should have correct countries options', () => {
