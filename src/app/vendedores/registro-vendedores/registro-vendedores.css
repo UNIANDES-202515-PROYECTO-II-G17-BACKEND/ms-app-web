@@ -1,0 +1,56 @@
+mat-form-field {
+  width: 100%;
+}
+
+h2 {
+  color: #7c4dff !important;
+}
+
+.boton-primario {
+  background-color: #7c4dff !important;
+  color: white !important;
+  border-radius: 6px !important;
+  padding: 10px 20px !important;
+  transition: all 0.3s ease !important;
+}
+
+.boton-primario:disabled {
+  background-color: #cccccc !important;
+  color: #666666 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+}
+
+.boton-secundario {
+  color: #7c4dff !important;
+  border: 1px solid #7c4dff !important;
+  border-radius: 6px !important;
+  padding: 10px 20px !important;
+}
+
+/* Contenedor principal que FUERZA a las filas a apilarse verticalmente */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Define una fila y alinea los campos horizontalmente */
+.form-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+}
+
+/* Hace que cada campo en una fila ocupe el espacio disponible */
+.form-row > * {
+  flex: 1;
+}
+
+/* Contenedor especial para centrar los botones */
+.form-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}

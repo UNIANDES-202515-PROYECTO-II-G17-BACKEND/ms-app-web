@@ -1,0 +1,123 @@
+<div class="p-6">
+  <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-6">
+    <h2 class="text-2xl font-bold text-purple-600 mb-6">Registro de Vendedores</h2>
+
+    <form [formGroup]="vendedorForm" (ngSubmit)="onSubmit()">
+      <div class="form-container">
+
+        <!-- Fila 1: Username (ancho completo) -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Username</mat-label>
+            <input matInput formControlName="username">
+            <mat-error *ngIf="vendedorForm.get('username')?.hasError('required')">El username es requerido</mat-error>
+            <mat-error *ngIf="vendedorForm.get('username')?.hasError('minlength')">El username debe tener al menos 4 caracteres</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Fila 2: Nombre Completo (ancho completo) -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre Completo</mat-label>
+            <input matInput formControlName="full_name">
+            <mat-error *ngIf="vendedorForm.get('full_name')?.hasError('required')">El nombre completo es requerido</mat-error>
+            <mat-error *ngIf="vendedorForm.get('full_name')?.hasError('minlength')">El nombre debe tener al menos 3 caracteres</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Fila 3: Tipo de Documento y Número de Documento -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Tipo de Documento</mat-label>
+            <mat-select formControlName="document_type">
+              <mat-option value="CEDULA_CIUDADANIA">Cédula de Ciudadanía</mat-option>
+              <mat-option value="NIT">NIT</mat-option>
+              <mat-option value="PASAPORTE">Pasaporte</mat-option>
+              <mat-option value="CEDULA_EXTRANJERIA">Cédula de Extranjería</mat-option>
+            </mat-select>
+            <mat-error *ngIf="vendedorForm.get('document_type')?.hasError('required')">El tipo de documento es requerido</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Número de Documento</mat-label>
+            <input matInput formControlName="document_number">
+            <mat-error *ngIf="vendedorForm.get('document_number')?.hasError('required')">El número de documento es requerido</mat-error>
+            <mat-error *ngIf="vendedorForm.get('document_number')?.hasError('minlength')">El documento debe tener al menos 5 caracteres</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Fila 4: Nombre de Institución (ancho completo) -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre de Institución</mat-label>
+            <input matInput formControlName="institution_name">
+            <mat-error *ngIf="vendedorForm.get('institution_name')?.hasError('required')">El nombre de institución es requerido</mat-error>
+            <mat-error *ngIf="vendedorForm.get('institution_name')?.hasError('minlength')">El nombre debe tener al menos 3 caracteres</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Fila 5: Teléfono y País -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Teléfono</mat-label>
+            <input matInput formControlName="telephone">
+            <mat-error *ngIf="vendedorForm.get('telephone')?.hasError('required')">El teléfono es requerido</mat-error>
+            <mat-error *ngIf="vendedorForm.get('telephone')?.hasError('pattern')">El teléfono debe tener entre 10 y 15 dígitos</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>País</mat-label>
+            <mat-select formControlName="pais">
+              <mat-option value="co">Colombia</mat-option>
+              <mat-option value="mx">México</mat-option>
+              <mat-option value="pe">Perú</mat-option>
+              <mat-option value="cl">Chile</mat-option>
+              <mat-option value="ar">Argentina</mat-option>
+            </mat-select>
+            <mat-error *ngIf="vendedorForm.get('pais')?.hasError('required')">El país es requerido</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Fila 6: Email (ancho completo) -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" type="email">
+            <mat-error *ngIf="vendedorForm.get('email')?.hasError('required')">El email es requerido</mat-error>
+            <mat-error *ngIf="vendedorForm.get('email')?.hasError('email')">Ingrese un email válido</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Fila 7: Contraseña y Confirmar Contraseña -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Contraseña</mat-label>
+            <input matInput formControlName="password" type="password">
+            <mat-error *ngIf="vendedorForm.get('password')?.hasError('required')">La contraseña es requerida</mat-error>
+            <mat-error *ngIf="vendedorForm.get('password')?.hasError('minlength')">La contraseña debe tener al menos 4 caracteres</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Confirmar Contraseña</mat-label>
+            <input matInput formControlName="confirmPassword" type="password">
+            <mat-error *ngIf="vendedorForm.get('confirmPassword')?.hasError('required')">Debe confirmar la contraseña</mat-error>
+            <mat-error *ngIf="vendedorForm.hasError('passwordMismatch') && vendedorForm.get('confirmPassword')?.touched">Las contraseñas no coinciden</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Botones -->
+        <div class="form-buttons">
+          <button mat-outlined-button type="button" class="boton-secundario" style="width: 200px;" (click)="goBack()">
+            Volver
+          </button>
+          <button
+            mat-flat-button
+            type="submit"
+            class="boton-primario"
+            style="width: 200px;"
+            [disabled]="!vendedorForm.valid">
+            Registrar Vendedor
+          </button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
