@@ -8,12 +8,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { RegistroProveedoresService } from './registro-proveedores.service';
+import { CargaIndividualService } from './carga-individual.service';
 import { PopupComponent } from '../../shared/popup/popup.component';
-import { ProveedorRequest, ProveedorResponse } from './registro-proveedores.interface';
+import { ProductoRequest, ProductoResponse } from './carga-individual.interface';
 
 @Component({
-  selector: 'app-registro-proveedores',
+  selector: 'app-carga-individual',
   standalone: true,
   imports: [
     CommonModule,
@@ -25,11 +25,11 @@ import { ProveedorRequest, ProveedorResponse } from './registro-proveedores.inte
     MatCheckboxModule,
     MatDialogModule
   ],
-  templateUrl: './registro-proveedores.html',
-  styleUrl: './registro-proveedores.css'
+  templateUrl: './carga-individual.html',
+  styleUrl: './carga-individual.css'
 })
-export class RegistroProveedores implements OnInit {
-  proveedorForm!: FormGroup;
+export class CargaIndividual implements OnInit {
+  productoForm!: FormGroup;
 
   // Estado del componente
   state = {
@@ -38,16 +38,12 @@ export class RegistroProveedores implements OnInit {
   };
 
   // Opciones para los selects
-  tiposPersona = [
-    { value: 'NATURAL', label: 'Persona Natural' },
-    { value: 'JURIDICA', label: 'Persona Jurídica' }
-  ];
-
-  tiposDocumento = [
-    { value: 'CC', label: 'Cédula de Ciudadanía' },
-    { value: 'NIT', label: 'NIT' },
-    { value: 'CE', label: 'Cédula de Extranjería' },
-    { value: 'PASAPORTE', label: 'Pasaporte' }
+  categorias = [
+    { value: 'MEDICAMENTO', label: 'Medicamento' },
+    { value: 'DISPOSITIVO_MEDICO', label: 'Dispositivo Médico' },
+    { value: 'EQUIPO', label: 'Equipo' },
+    { value: 'MATERIAL', label: 'Material' },
+    { value: 'REACTIVO', label: 'Reactivo' }
   ];
 
   paises = [
@@ -60,56 +56,51 @@ export class RegistroProveedores implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private proveedorService: RegistroProveedoresService,
+    private productoService: CargaIndividualService,
     private router: Router,
     private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
-    this.proveedorForm = this.fb.group({
+    this.productoForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
-      tipo_de_persona: ['', Validators.required],
-      documento: ['', [Validators.required, Validators.minLength(5)]],
-      tipo_documento: ['', Validators.required],
+      descripcion: ['', [Validators.required, Validators.minLength(10)]],
+      categoria: ['', Validators.required],
+      precio: ['', [Validators.required, Validators.min(0)]],
+      stock: ['', [Validators.required, Validators.min(0)]],
+      proveedor_id: [''],
       pais: ['', Validators.required],
-      direccion: ['', [Validators.required, Validators.minLength(10)]],
-      telefono: ['', [Validators.required, Validators.pattern(/^\+?\d{10,15}$/)]],
-      email: ['', [Validators.required, Validators.email]],
-      pagina_web: ['', [Validators.required, Validators.pattern(/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/)]],
       activo: [true]
     });
   }
 
   onSubmit(): void {
-    if (this.proveedorForm.valid) {
+    if (this.productoForm.valid) {
       this.state.isLoading = true;
       this.state.error = null;
 
-      const formValue = this.proveedorForm.value;
+      const formValue = this.productoForm.value;
       const country = formValue.pais || 'co';
 
-      const proveedorRequest: ProveedorRequest = {
-        nombre: formValue.nombre || '',
-        tipo_de_persona: formValue.tipo_de_persona || 'JURIDICA',
-        documento: formValue.documento || '',
-        tipo_documento: formValue.tipo_documento || 'NIT',
-        pais: formValue.pais?.toUpperCase() || 'CO',
-        direccion: formValue.direccion || '',
-        telefono: formValue.telefono || '',
-        email: formValue.email || '',
-        pagina_web: formValue.pagina_web || '',
+      const productoData: ProductoRequest = {
+        nombre: formValue.nombre,
+        descripcion: formValue.descripcion,
+        categoria: formValue.categoria,
+        precio: parseFloat(formValue.precio),
+        stock: parseInt(formValue.stock),
+        proveedor_id: formValue.proveedor_id || undefined,
         activo: formValue.activo ?? true
       };
 
-      this.proveedorService.registrarProveedor(proveedorRequest, country).subscribe({
-        next: (response: ProveedorResponse) => {
+      this.productoService.registrarProducto(productoData, country).subscribe({
+        next: (response: ProductoResponse) => {
           this.state.isLoading = false;
 
           // Mostrar popup de éxito
           const dialogRef = this.dialog.open(PopupComponent, {
             data: {
               type: 'success',
-              message: response.message || '¡Proveedor registrado exitosamente!'
+              message: response.message || '¡Producto registrado exitosamente!'
             }
           });
 
@@ -122,7 +113,7 @@ export class RegistroProveedores implements OnInit {
           this.state.isLoading = false;
 
           // Extraer mensaje de error de la API
-          const errorMessage = error.error?.detail || error.error?.message || 'Error al registrar el proveedor. Inténtalo de nuevo.';
+          const errorMessage = error.error?.detail || error.error?.message || 'Error al registrar el producto. Inténtalo de nuevo.';
           this.state.error = errorMessage;
 
           // Mostrar popup de error

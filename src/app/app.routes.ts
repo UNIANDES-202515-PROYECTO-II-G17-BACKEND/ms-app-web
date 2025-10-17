@@ -23,8 +23,9 @@ export const routes: Routes = [
       { path: 'vendedores/registro', loadComponent: () => import('./vendedores/registro-vendedores/registro-vendedores').then(m => m.RegistroVendedores) },
       { path: 'vendedores/plan-venta', loadComponent: () => import('./vendedores/plan-venta/plan-venta').then(m => m.PlanVenta) },
 
-      // Ruta de Productos (sin submenús)
-      { path: 'productos', loadComponent: () => import('./productos/productos').then(m => m.Productos) },
+      // Rutas de Productos
+      { path: 'productos/carga-individual', loadComponent: () => import('./productos/carga-individual/carga-individual').then(m => m.CargaIndividual) },
+      { path: 'productos/carga-masiva', loadComponent: () => import('./productos/carga-masiva/carga-masiva').then(m => m.CargaMasiva) },
 
       // Rutas de Pedidos
       { path: 'pedidos/consulta', loadComponent: () => import('./pedidos/consulta-pedidos/consulta-pedidos').then(m => m.ConsultaPedidos) },
