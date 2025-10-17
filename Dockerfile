@@ -25,8 +25,9 @@ COPY env.template.js /usr/share/nginx/html/browser/assets/env.template.js
 
 # Script que se ejecuta automáticamente al arrancar NGINX en esta imagen
 COPY docker-entrypoint.sh /docker-entrypoint.d/10-gen-env.sh
+# Convert line endings to be compatible with Linux
+RUN sed -i 's/\r$//' /docker-entrypoint.d/10-gen-env.sh
 RUN chmod +x /docker-entrypoint.d/10-gen-env.sh
 
 EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]
-
