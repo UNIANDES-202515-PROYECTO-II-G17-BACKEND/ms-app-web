@@ -47,7 +47,15 @@ export class RegistroProveedores implements OnInit {
     { value: 'CC', label: 'Cédula de Ciudadanía' },
     { value: 'NIT', label: 'NIT' },
     { value: 'CE', label: 'Cédula de Extranjería' },
-    { value: 'PP', label: 'Pasaporte' }
+    { value: 'PASAPORTE', label: 'Pasaporte' }
+  ];
+
+  paises = [
+    { value: 'co', label: 'Colombia' },
+    { value: 'mx', label: 'México' },
+    { value: 'pe', label: 'Perú' },
+    { value: 'cl', label: 'Chile' },
+    { value: 'ar', label: 'Argentina' }
   ];
 
   constructor(
@@ -63,7 +71,7 @@ export class RegistroProveedores implements OnInit {
       tipo_de_persona: ['', Validators.required],
       documento: ['', [Validators.required, Validators.minLength(5)]],
       tipo_documento: ['', Validators.required],
-      pais: ['CO', Validators.required],
+      pais: ['', Validators.required],
       direccion: ['', [Validators.required, Validators.minLength(10)]],
       telefono: ['', [Validators.required, Validators.pattern(/^\+?\d{10,15}$/)]],
       email: ['', [Validators.required, Validators.email]],
@@ -78,12 +86,14 @@ export class RegistroProveedores implements OnInit {
       this.state.error = null;
 
       const formValue = this.proveedorForm.value;
+      const country = formValue.pais || 'co';
+      
       const proveedorRequest: ProveedorRequest = {
         nombre: formValue.nombre || '',
         tipo_de_persona: formValue.tipo_de_persona || 'JURIDICA',
         documento: formValue.documento || '',
         tipo_documento: formValue.tipo_documento || 'NIT',
-        pais: formValue.pais || 'CO',
+        pais: formValue.pais?.toUpperCase() || 'CO',
         direccion: formValue.direccion || '',
         telefono: formValue.telefono || '',
         email: formValue.email || '',
@@ -91,7 +101,7 @@ export class RegistroProveedores implements OnInit {
         activo: formValue.activo ?? true
       };
 
-      this.proveedorService.registrarProveedor(proveedorRequest).subscribe({
+      this.proveedorService.registrarProveedor(proveedorRequest, country).subscribe({
         next: (response: ProveedorResponse) => {
           this.state.isLoading = false;
 

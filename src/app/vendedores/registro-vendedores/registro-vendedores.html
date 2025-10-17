@@ -30,10 +30,10 @@
           <mat-form-field appearance="outline">
             <mat-label>Tipo de Documento</mat-label>
             <mat-select formControlName="document_type">
-              <mat-option value="CEDULA_CIUDADANIA">Cédula de Ciudadanía</mat-option>
+              <mat-option value="CC">Cédula de Ciudadanía</mat-option>
               <mat-option value="NIT">NIT</mat-option>
               <mat-option value="PASAPORTE">Pasaporte</mat-option>
-              <mat-option value="CEDULA_EXTRANJERIA">Cédula de Extranjería</mat-option>
+              <mat-option value="CE">Cédula de Extranjería</mat-option>
             </mat-select>
             <mat-error *ngIf="vendedorForm.get('document_type')?.hasError('required')">El tipo de documento es requerido</mat-error>
           </mat-form-field>

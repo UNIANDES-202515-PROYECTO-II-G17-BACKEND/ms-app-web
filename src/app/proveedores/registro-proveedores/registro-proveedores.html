@@ -10,7 +10,8 @@
             <mat-label>Nombre del Proveedor</mat-label>
             <input matInput formControlName="nombre">
             <mat-error *ngIf="proveedorForm.get('nombre')?.hasError('required')">El nombre es requerido</mat-error>
-            <mat-error *ngIf="proveedorForm.get('nombre')?.hasError('minlength')">El nombre debe tener al menos 3 caracteres</mat-error>
+            <mat-error *ngIf="proveedorForm.get('nombre')?.hasError('minlength')">El nombre debe tener al menos 3
+              caracteres</mat-error>
           </mat-form-field>
         </div>
 
@@ -21,17 +22,19 @@
               <mat-option value="NATURAL">Natural</mat-option>
               <mat-option value="JURIDICA">Jurídica</mat-option>
             </mat-select>
-            <mat-error *ngIf="proveedorForm.get('tipo_de_persona')?.hasError('required')">El tipo de persona es requerido</mat-error>
+            <mat-error *ngIf="proveedorForm.get('tipo_de_persona')?.hasError('required')">El tipo de persona es
+              requerido</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Tipo de Documento</mat-label>
             <mat-select formControlName="tipo_documento">
-              <mat-option value="CEDULA_CIUDADANIA">Cédula de Ciudadanía</mat-option>
+              <mat-option value="CC">Cédula de Ciudadanía</mat-option>
               <mat-option value="NIT">NIT</mat-option>
               <mat-option value="PASAPORTE">Pasaporte</mat-option>
-              <mat-option value="CEDULA_EXTRANJERIA">Cédula de Extranjería</mat-option>
+              <mat-option value="CE">Cédula de Extranjería</mat-option>
             </mat-select>
-            <mat-error *ngIf="proveedorForm.get('tipo_documento')?.hasError('required')">El tipo de documento es requerido</mat-error>
+            <mat-error *ngIf="proveedorForm.get('tipo_documento')?.hasError('required')">El tipo de documento es
+              requerido</mat-error>
           </mat-form-field>
         </div>
 
@@ -39,12 +42,22 @@
           <mat-form-field appearance="outline">
             <mat-label>Número de Documento</mat-label>
             <input matInput formControlName="documento">
-            <mat-error *ngIf="proveedorForm.get('documento')?.hasError('required')">El número de documento es requerido</mat-error>
-            <mat-error *ngIf="proveedorForm.get('documento')?.hasError('minlength')">El documento debe tener al menos 5 caracteres</mat-error>
+            <mat-error *ngIf="proveedorForm.get('documento')?.hasError('required')">El número de documento es
+              requerido</mat-error>
+            <mat-error *ngIf="proveedorForm.get('documento')?.hasError('minlength')">El documento debe tener al menos 5
+              caracteres</mat-error>
           </mat-form-field>
+
           <mat-form-field appearance="outline">
             <mat-label>País</mat-label>
-            <input matInput formControlName="pais" readonly>
+            <mat-select formControlName="pais">
+              <mat-option value="co">Colombia</mat-option>
+              <mat-option value="mx">México</mat-option>
+              <mat-option value="pe">Perú</mat-option>
+              <mat-option value="cl">Chile</mat-option>
+              <mat-option value="ar">Argentina</mat-option>
+            </mat-select>
+            <mat-error *ngIf="proveedorForm.get('pais')?.hasError('required')">El país es requerido</mat-error>
           </mat-form-field>
         </div>
 
@@ -52,8 +65,10 @@
           <mat-form-field appearance="outline">
             <mat-label>Dirección</mat-label>
             <input matInput formControlName="direccion">
-            <mat-error *ngIf="proveedorForm.get('direccion')?.hasError('required')">La dirección es requerida</mat-error>
-            <mat-error *ngIf="proveedorForm.get('direccion')?.hasError('minlength')">La dirección debe tener al menos 10 caracteres</mat-error>
+            <mat-error *ngIf="proveedorForm.get('direccion')?.hasError('required')">La dirección es
+              requerida</mat-error>
+            <mat-error *ngIf="proveedorForm.get('direccion')?.hasError('minlength')">La dirección debe tener al menos 10
+              caracteres</mat-error>
           </mat-form-field>
         </div>
 
@@ -62,8 +77,10 @@
             <mat-label>Teléfono</mat-label>
             <input matInput formControlName="telefono">
             <mat-error *ngIf="proveedorForm.get('telefono')?.hasError('required')">El teléfono es requerido</mat-error>
-            <mat-error *ngIf="proveedorForm.get('telefono')?.hasError('pattern')">El teléfono debe tener entre 10 y 15 dígitos</mat-error>
+            <mat-error *ngIf="proveedorForm.get('telefono')?.hasError('pattern')">El teléfono debe tener entre 10 y 15
+              dígitos</mat-error>
           </mat-form-field>
+
           <mat-form-field appearance="outline">
             <mat-label>Email</mat-label>
             <input matInput formControlName="email" type="email">
@@ -76,8 +93,10 @@
           <mat-form-field appearance="outline">
             <mat-label>Página Web</mat-label>
             <input matInput formControlName="pagina_web" placeholder="https://ejemplo.com">
-            <mat-error *ngIf="proveedorForm.get('pagina_web')?.hasError('required')">La página web es requerida</mat-error>
-            <mat-error *ngIf="proveedorForm.get('pagina_web')?.hasError('pattern')">Ingrese una URL válida (debe comenzar con http:// o https://)</mat-error>
+            <mat-error *ngIf="proveedorForm.get('pagina_web')?.hasError('required')">La página web es
+              requerida</mat-error>
+            <mat-error *ngIf="proveedorForm.get('pagina_web')?.hasError('pattern')">Ingrese una URL válida (debe
+              comenzar con http:// o https://)</mat-error>
           </mat-form-field>
           <mat-checkbox formControlName="activo">Proveedor activo</mat-checkbox>
         </div>
@@ -86,11 +105,7 @@
           <button mat-outlined-button type="button" class="boton-secundario" style="width: 200px;" (click)="goBack()">
             Volver
           </button>
-          <button
-            mat-flat-button
-            type="submit"
-            class="boton-primario"
-            style="width: 200px;"
+          <button mat-flat-button type="submit" class="boton-primario" style="width: 200px;"
             [disabled]="!proveedorForm.valid">
             Registrar Proveedor
           </button>
