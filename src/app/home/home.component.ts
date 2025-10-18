@@ -50,10 +50,10 @@ export class HomeComponent implements OnInit {
       ]
     },
     {
-      label: 'Consulta de productos',
-      icon: 'search',
+      label: 'Productos',
+      icon: 'inventory_2',
       key: 'productos',
-      route: '/home/productos' // Sin submenús
+      route: '/home/productos' // Sin submenús, solo consulta
     },
     {
       label: 'Pedidos',
