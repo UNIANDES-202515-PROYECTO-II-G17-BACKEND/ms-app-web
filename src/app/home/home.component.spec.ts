@@ -48,15 +48,11 @@ describe('HomeComponent - Unit Tests', () => {
     expect(vendedoresMenu).toBeDefined();
     expect(vendedoresMenu?.subItems).toHaveSize(2);
 
-    // Verificar menú Productos (tiene subItems)
+    // Verificar menú Productos (sin subItems, ruta directa)
     const productosMenu = component.menuItems.find(item => item.key === 'productos');
     expect(productosMenu).toBeDefined();
-    expect(productosMenu?.subItems).toBeDefined();
-    expect(productosMenu?.subItems).toHaveSize(2);
-    expect(productosMenu?.subItems).toEqual([
-      { label: 'Carga individual de productos', route: '/home/productos/carga-individual' },
-      { label: 'Carga masiva de productos', route: '/home/productos/carga-masiva' }
-    ]);
+    expect(productosMenu?.route).toBe('/home/productos');
+    expect(productosMenu?.subItems).toBeUndefined();
 
     // Verificar menú Reportes (sin subItems, ruta directa)
     const reportesMenu = component.menuItems.find(item => item.key === 'reportes');

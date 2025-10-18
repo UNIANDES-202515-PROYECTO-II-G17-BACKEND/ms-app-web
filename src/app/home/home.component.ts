@@ -50,13 +50,10 @@ export class HomeComponent implements OnInit {
       ]
     },
     {
-      label: 'Carga de productos',
-      icon: 'upload',
+      label: 'Productos',
+      icon: 'inventory_2',
       key: 'productos',
-      subItems: [
-        { label: 'Carga individual de productos', route: '/home/productos/carga-individual' },
-        { label: 'Carga masiva de productos', route: '/home/productos/carga-masiva' }
-      ]
+      route: '/home/productos' // Sin submenús, solo consulta
     },
     {
       label: 'Pedidos',

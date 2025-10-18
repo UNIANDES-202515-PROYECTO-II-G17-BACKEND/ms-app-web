@@ -1,7 +1,92 @@
-<div class="container p-4">
-  <h2 class="mb-4">Carga de Productos Masiva</h2>
-  <div class="card p-4">
-    <p>Carga múltiples productos mediante archivos CSV o Excel.</p>
-    <p><em>Funcionalidad en desarrollo...</em></p>
+<div class="p-6">
+  <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-6">
+    <h2 class="text-2xl font-bold text-purple-600 mb-6">Carga Masiva de Productos</h2>
+
+    <div class="mb-6">
+      <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <mat-icon class="text-blue-400">info</mat-icon>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-blue-700">
+              <strong>Formato del archivo:</strong> Debe ser un archivo CSV o Excel con las siguientes columnas:
+            </p>
+            <ul class="text-sm text-blue-700 list-disc ml-5 mt-2">
+              <li>Nombre</li>
+              <li>Descripción</li>
+              <li>Categoría</li>
+              <li>Precio</li>
+              <li>Stock</li>
+              <li>Proveedor ID (Opcional)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form [formGroup]="cargaForm" (ngSubmit)="onSubmit()">
+      <div class="form-container">
+
+        <!-- País -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>País</mat-label>
+            <mat-select formControlName="pais">
+              <mat-option value="co">Colombia</mat-option>
+              <mat-option value="mx">México</mat-option>
+              <mat-option value="pe">Perú</mat-option>
+              <mat-option value="cl">Chile</mat-option>
+              <mat-option value="ar">Argentina</mat-option>
+            </mat-select>
+            <mat-error *ngIf="cargaForm.get('pais')?.hasError('required')">El país es requerido</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Archivo -->
+        <div class="form-row">
+          <div class="file-upload-container">
+            <input
+              type="file"
+              #fileInput
+              (change)="onFileSelected($event)"
+              accept=".csv,.xlsx,.xls"
+              style="display: none">
+
+            <mat-form-field appearance="outline" class="flex-1">
+              <mat-label>Archivo</mat-label>
+              <input matInput [value]="fileName" readonly formControlName="archivo">
+              <mat-error *ngIf="cargaForm.get('archivo')?.hasError('required')">Debe seleccionar un archivo</mat-error>
+            </mat-form-field>
+
+            <button
+              mat-raised-button
+              type="button"
+              class="boton-secundario ml-3"
+              (click)="fileInput.click()">
+              <mat-icon>upload_file</mat-icon>
+              Seleccionar Archivo
+            </button>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="form-buttons">
+          <button mat-outlined-button type="button" class="boton-secundario" style="width: 200px;" (click)="goBack()">
+            Volver
+          </button>
+          <button
+            mat-flat-button
+            type="submit"
+            class="boton-primario"
+            style="width: 200px;"
+            [disabled]="!cargaForm.valid || !selectedFile">
+            <mat-icon>cloud_upload</mat-icon>
+            Cargar Productos
+          </button>
+        </div>
+
+      </div>
+    </form>
   </div>
 </div>

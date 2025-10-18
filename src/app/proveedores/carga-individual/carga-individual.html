@@ -1,7 +1,136 @@
-<div class="container p-4">
-  <h2 class="mb-4">Carga de Productos Individual</h2>
-  <div class="card p-4">
-    <p>Carga productos de forma individual al catálogo del proveedor.</p>
-    <p><em>Funcionalidad en desarrollo...</em></p>
+<div class="p-6">
+  <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-6">
+    <h2 class="text-2xl font-bold text-purple-600 mb-6">Carga Individual de Productos</h2>
+
+    <form [formGroup]="productoForm" (ngSubmit)="onSubmit()">
+      <div class="form-container">
+
+        <!-- SKU y Nombre (ancho completo) -->
+        <div class="form-row grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <mat-form-field appearance="outline">
+            <mat-label>SKU</mat-label>
+            <input matInput formControlName="sku">
+            <mat-error *ngIf="productoForm.get('sku')?.hasError('required')">El SKU es requerido</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre del Producto</mat-label>
+            <input matInput formControlName="nombre">
+            <mat-error *ngIf="productoForm.get('nombre')?.hasError('required')">El nombre es requerido</mat-error>
+            <mat-error *ngIf="productoForm.get('nombre')?.hasError('minlength')">El nombre debe tener al menos 3 caracteres</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Categoría y Controlado -->
+        <div class="form-row grid grid-cols-1 lg:grid-cols-3 gap-4" style="align-items: center;">
+          <mat-form-field appearance="outline" class="lg:col-span-2">
+            <mat-label>Categoría</mat-label>
+            <mat-select formControlName="categoria">
+              <mat-option *ngFor="let cat of categorias" [value]="cat.value">{{ cat.label }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="productoForm.get('categoria')?.hasError('required')">La categoría es requerida</mat-error>
+          </mat-form-field>
+          <mat-checkbox formControlName="controlado">Producto Controlado</mat-checkbox>
+        </div>
+
+        <!-- Temperatura Mínima y Máxima -->
+        <div class="form-row grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <mat-form-field appearance="outline">
+            <mat-label>Temperatura Mínima (°C)</mat-label>
+            <input matInput type="number" formControlName="temp_min" step="0.1">
+            <mat-error *ngIf="productoForm.get('temp_min')?.hasError('required')">La temperatura mínima es requerida</mat-error>
+            <mat-error *ngIf="productoForm.get('temp_min')?.hasError('pattern')">Ingrese un número válido</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Temperatura Máxima (°C)</mat-label>
+            <input matInput type="number" formControlName="temp_max" step="0.1">
+            <mat-error *ngIf="productoForm.get('temp_max')?.hasError('required')">La temperatura máxima es requerida</mat-error>
+            <mat-error *ngIf="productoForm.get('temp_max')?.hasError('pattern')">Ingrese un número válido</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Proveedor y País -->
+        <div class="form-row grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <mat-form-field appearance="outline">
+            <mat-label>Proveedor</mat-label>
+            <mat-select formControlName="proveedor_id">
+              <mat-option *ngFor="let proveedor of proveedores" [value]="proveedor.id">
+                {{ proveedor.nombre }} - {{ proveedor.documento }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="productoForm.get('proveedor_id')?.hasError('required')">El proveedor es requerido</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>País</mat-label>
+            <mat-select formControlName="pais" (selectionChange)="onPaisChange()">
+              <mat-option *ngFor="let pais of paises" [value]="pais.value">{{ pais.label }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="productoForm.get('pais')?.hasError('required')">El país es requerido</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- SKU Proveedor -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>SKU Proveedor</mat-label>
+            <input matInput formControlName="sku_proveedor">
+            <mat-error *ngIf="productoForm.get('sku_proveedor')?.hasError('required')">El SKU del proveedor es requerido</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Precio y Moneda -->
+        <div class="form-row grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <mat-form-field appearance="outline">
+            <mat-label>Precio</mat-label>
+            <input matInput type="number" formControlName="precio" step="0.01">
+            <mat-error *ngIf="productoForm.get('precio')?.hasError('required')">El precio es requerido</mat-error>
+            <mat-error *ngIf="productoForm.get('precio')?.hasError('min')">El precio debe ser mayor o igual a 0</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Moneda</mat-label>
+            <mat-select formControlName="moneda">
+              <mat-option *ngFor="let moneda of monedas" [value]="moneda.value">{{ moneda.label }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="productoForm.get('moneda')?.hasError('required')">La moneda es requerida</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Lead Time y Lote Mínimo -->
+        <div class="form-row grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <mat-form-field appearance="outline">
+            <mat-label>Lead Time (días)</mat-label>
+            <input matInput type="number" formControlName="lead_time_dias">
+            <mat-error *ngIf="productoForm.get('lead_time_dias')?.hasError('required')">El lead time es requerido</mat-error>
+            <mat-error *ngIf="productoForm.get('lead_time_dias')?.hasError('min')">El lead time debe ser mayor o igual a 0</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Lote Mínimo</mat-label>
+            <input matInput type="number" formControlName="lote_minimo">
+            <mat-error *ngIf="productoForm.get('lote_minimo')?.hasError('required')">El lote mínimo es requerido</mat-error>
+            <mat-error *ngIf="productoForm.get('lote_minimo')?.hasError('min')">El lote mínimo debe ser al menos 1</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Activo -->
+        <div class="form-row">
+          <mat-checkbox formControlName="activo">Producto activo</mat-checkbox>
+        </div>
+
+        <!-- Botones -->
+        <div class="form-buttons">
+          <button mat-outlined-button type="button" class="boton-secundario" style="width: 200px;" (click)="goBack()">
+            Volver
+          </button>
+          <button
+            mat-flat-button
+            type="submit"
+            class="boton-primario"
+            style="width: 200px;"
+            [disabled]="!productoForm.valid || isLoading">
+            {{ isLoading ? 'Procesando...' : 'Registrar Producto' }}
+          </button>
+        </div>
+
+      </div>
+    </form>
   </div>
 </div>
