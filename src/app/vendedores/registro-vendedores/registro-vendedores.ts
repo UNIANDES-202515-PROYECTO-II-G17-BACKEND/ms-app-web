@@ -37,10 +37,10 @@ export class RegistroVendedores implements OnInit {
 
   // Opciones para los selects
   tiposDocumento = [
-    { value: 'CEDULA_CIUDADANIA', label: 'Cédula de Ciudadanía' },
+    { value: 'CC', label: 'Cédula de Ciudadanía' },
     { value: 'NIT', label: 'NIT' },
     { value: 'PASAPORTE', label: 'Pasaporte' },
-    { value: 'CEDULA_EXTRANJERIA', label: 'Cédula de Extranjería' }
+    { value: 'CE', label: 'Cédula de Extranjería' }
   ];
 
   paises = [

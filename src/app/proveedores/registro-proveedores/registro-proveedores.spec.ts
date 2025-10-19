@@ -42,7 +42,8 @@ describe('RegistroProveedores - Unit Tests', () => {
     expect(component.proveedorForm.get('tipo_de_persona')?.value).toBe('');
     expect(component.proveedorForm.get('documento')?.value).toBe('');
     expect(component.proveedorForm.get('tipo_documento')?.value).toBe('');
-    expect(component.proveedorForm.get('pais')?.value).toBe('CO');
+    // The form control 'pais' is initialized empty; component later uses 'co' as default when constructing request
+    expect(component.proveedorForm.get('pais')?.value).toBe('');
     expect(component.proveedorForm.get('direccion')?.value).toBe('');
     expect(component.proveedorForm.get('telefono')?.value).toBe('');
     expect(component.proveedorForm.get('email')?.value).toBe('');
@@ -72,7 +73,8 @@ describe('RegistroProveedores - Unit Tests', () => {
     expect(form.get('tipo_de_persona')?.hasError('required')).toBeTrue();
     expect(form.get('documento')?.hasError('required')).toBeTrue();
     expect(form.get('tipo_documento')?.hasError('required')).toBeTrue();
-    expect(form.get('pais')?.hasError('required')).toBeFalse(); // Has default value
+    // 'pais' control starts empty so it should be required
+    expect(form.get('pais')?.hasError('required')).toBeTrue();
     expect(form.get('direccion')?.hasError('required')).toBeTrue();
     expect(form.get('telefono')?.hasError('required')).toBeTrue();
     expect(form.get('email')?.hasError('required')).toBeTrue();
@@ -160,7 +162,7 @@ describe('RegistroProveedores - Unit Tests', () => {
       tipo_de_persona: 'JURIDICA',
       documento: '1234567890',
       tipo_documento: 'NIT',
-      pais: 'CO',
+      pais: 'co',
       direccion: 'Calle 123 #45-67',
       telefono: '+573001234567',
       email: 'test@proveedor.com',
@@ -175,6 +177,7 @@ describe('RegistroProveedores - Unit Tests', () => {
 
     component.onSubmit();
 
+    // The component calls registrarProveedor(requestObject, country)
     expect(mockProveedorService.registrarProveedor).toHaveBeenCalledWith({
       nombre: 'Proveedor Test',
       tipo_de_persona: 'JURIDICA',
@@ -186,7 +189,7 @@ describe('RegistroProveedores - Unit Tests', () => {
       email: 'test@proveedor.com',
       pagina_web: 'https://www.proveedor.com',
       activo: true
-    });
+    }, 'co');
   });
 
   it('should handle successful registration', () => {

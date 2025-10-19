@@ -11,12 +11,12 @@ export class RegistroProveedoresService {
 
   constructor(private http: HttpClient) { }
 
-  registrarProveedor(data: ProveedorRequest): Observable<ProveedorResponse> {
+  registrarProveedor(data: ProveedorRequest, country: string): Observable<ProveedorResponse> {
     console.log('Registrando proveedor con datos:', data);
     return this.http.post<ProveedorResponse>(`${environment.apiUrl}/proveedores`, data, {
       headers: {
         'Content-Type': 'application/json',
-        'X-Country': 'co'
+        'X-Country': country
       }
     });
   }
