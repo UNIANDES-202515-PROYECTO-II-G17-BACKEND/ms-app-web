@@ -1,30 +1,30 @@
-# nginx.conf.template
 server {
   listen ${PORT};
   server_name _;
 
-  # Si tu build tiene /browser (Angular 17/18 con builder nuevo)
+  # Build SSR: los estáticos viven en /browser
   root /usr/share/nginx/html/browser;
   index index.html index.csr.html;
 
-  # (Opcional) si quieres mantener el redirect inicial:
-  # Mejor redirige a /login/ (con slash) para no provocar el 301 siguiente.
+  # Redirección inicial (mejor con slash final para evitar 301 implícito)
   location = / { return 302 /login/; }
 
-  # Assets con cache largo
+  # Assets fingerprinted: cache largo
   location ~* \.(?:js|mjs|css|png|jpg|jpeg|gif|ico|svg|webp|woff2?)$ {
     try_files $uri =404;
     add_header Cache-Control "public, max-age=31536000, immutable";
     access_log off;
   }
 
-  # Shell y env sin cache
+  # Shell de la app y env.js sin cache
   location = /index.html     { add_header Cache-Control "no-store"; }
   location = /index.csr.html { add_header Cache-Control "no-store"; }
   location = /assets/env.js  { add_header Cache-Control "no-store"; }
 
-  # 🔧 CLAVE: primero intenta archivo tal cual, luego /index.html del directorio,
-  # y por último cae al CSR (index.csr.html). Así evitas el 301 implícito.
+  # Fallback SPA:
+  # 1) intenta archivo tal cual
+  # 2) si existe un directorio prerender (/ruta/index.html) lo sirve
+  # 3) sino, cae al CSR (index.csr.html). Si no existiera, Angular igual tiene index.html.
   location / {
     try_files $uri $uri/index.html /index.csr.html;
   }
@@ -32,6 +32,7 @@ server {
   # Salud
   location = /healthz { return 200 "ok"; }
 
+  # Compresión básica
   gzip on;
   gzip_min_length 1024;
   gzip_types text/plain text/css application/javascript application/json application/xml image/svg+xml;
