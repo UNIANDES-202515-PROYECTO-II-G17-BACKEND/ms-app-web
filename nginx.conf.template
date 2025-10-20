@@ -1,5 +1,5 @@
 server {
-  listen 8080;
+  listen ${PORT};
   server_name _;
 
   # Si tu build deja /browser, mantenlo así. (Si copiaste directo a /html, usa ese root)
