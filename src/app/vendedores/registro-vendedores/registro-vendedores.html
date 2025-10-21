@@ -18,7 +18,7 @@
         <!-- Fila 2: Nombre Completo (ancho completo) -->
         <div class="form-row">
           <mat-form-field appearance="outline">
-            <mat-label>Nombre Completo</mat-label>
+            <mat-label>Nombre</mat-label>
             <input matInput formControlName="full_name">
             <mat-error *ngIf="vendedorForm.get('full_name')?.hasError('required')">El nombre completo es requerido</mat-error>
             <mat-error *ngIf="vendedorForm.get('full_name')?.hasError('minlength')">El nombre debe tener al menos 3 caracteres</mat-error>
