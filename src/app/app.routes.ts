@@ -23,7 +23,7 @@ export const routes: Routes = [
       { path: 'vendedores/registro', loadComponent: () => import('./vendedores/registro-vendedores/registro-vendedores').then(m => m.RegistroVendedores) },
       { path: 'vendedores/plan-venta', loadComponent: () => import('./vendedores/plan-venta/plan-venta').then(m => m.PlanVenta) },
 
-      // Ruta de Productos (sin submenús)
+      // Ruta de Productos (consulta de productos)
       { path: 'productos', loadComponent: () => import('./productos/productos').then(m => m.Productos) },
 
       // Rutas de Pedidos
@@ -32,7 +32,7 @@ export const routes: Routes = [
       { path: 'pedidos/crear', loadComponent: () => import('./pedidos/crear-pedido/crear-pedido').then(m => m.CrearPedido) },
       { path: 'pedidos/estado', loadComponent: () => import('./pedidos/estado-pedido/estado-pedido').then(m => m.EstadoPedido) },
 
-      // Ruta de Reportes (sin submenús)
+      // Ruta de Reportes
       { path: 'reportes', loadComponent: () => import('./reportes/reportes').then(m => m.Reportes) }
     ]
   },
