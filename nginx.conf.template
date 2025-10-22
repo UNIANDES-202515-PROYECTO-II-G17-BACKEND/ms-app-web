@@ -10,8 +10,9 @@ server {
   root /usr/share/nginx/html/browser;
   index index.html index.csr.html;
 
-  # ✅ Responder 200 en raíz (sin 302). Angular se encarga de rutear.
-  location = / { try_files /index.html =404; }
+  location = / {
+    try_files /index.html /index.csr.html =404;
+  }
 
   # Assets fingerprinted: cache largo
   location ~* \.(?:js|mjs|css|png|jpg|jpeg|gif|ico|svg|webp|woff2?)$ {
