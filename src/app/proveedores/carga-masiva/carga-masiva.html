@@ -1,25 +1,19 @@
 <div class="p-6">
-  <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-6">
-    <h2 class="text-2xl font-bold text-purple-600 mb-6">Carga Masiva de Productos</h2>
+  <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-8">
+    <h2 class="text-3xl font-bold text-purple-600 mb-6 flex items-center gap-2">
+      Carga Masiva de Productos
+    </h2>
 
     <div class="mb-6">
-      <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+      <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4 rounded-r-lg">
         <div class="flex">
-          <div class="flex-shrink-0">
-            <mat-icon class="text-blue-400">info</mat-icon>
-          </div>
           <div class="ml-3">
             <p class="text-sm text-blue-700">
-              <strong>Formato del archivo:</strong> Debe ser un archivo CSV o Excel con las siguientes columnas:
+              <strong>Formato del archivo:</strong> Debe ser un archivo CSV con los productos a cargar.
             </p>
-            <ul class="text-sm text-blue-700 list-disc ml-5 mt-2">
-              <li>Nombre</li>
-              <li>Descripción</li>
-              <li>Categoría</li>
-              <li>Precio</li>
-              <li>Stock</li>
-              <li>Proveedor ID (Opcional)</li>
-            </ul>
+            <p class="text-sm text-blue-700 mt-2">
+              Los productos se asociarán al proveedor seleccionado.
+            </p>
           </div>
         </div>
       </div>
@@ -32,7 +26,7 @@
         <div class="form-row">
           <mat-form-field appearance="outline">
             <mat-label>País</mat-label>
-            <mat-select formControlName="pais">
+            <mat-select formControlName="pais" (selectionChange)="onPaisChange()">
               <mat-option value="co">Colombia</mat-option>
               <mat-option value="mx">México</mat-option>
               <mat-option value="pe">Perú</mat-option>
@@ -43,30 +37,57 @@
           </mat-form-field>
         </div>
 
+        <!-- Proveedor -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Proveedor</mat-label>
+            <mat-select formControlName="proveedor" [disabled]="state.loadingProveedores || proveedores.length === 0">
+              <mat-option *ngFor="let proveedor of proveedores" [value]="proveedor.id">
+                {{ proveedor.nombre }} - {{ proveedor.documento }}
+                <span *ngIf="!proveedor.activo" class="text-gray-400 text-sm"> (Inactivo)</span>
+              </mat-option>
+            </mat-select>
+            <mat-hint *ngIf="state.loadingProveedores">Cargando proveedores...</mat-hint>
+            <mat-hint *ngIf="!state.loadingProveedores && proveedores.length === 0 && cargaForm.get('pais')?.value">
+              No hay proveedores disponibles para este país
+            </mat-hint>
+            <mat-error *ngIf="cargaForm.get('proveedor')?.hasError('required')">
+              Debe seleccionar un proveedor
+            </mat-error>
+          </mat-form-field>
+        </div>
+
         <!-- Archivo -->
         <div class="form-row">
           <div class="file-upload-container">
-            <input
-              type="file"
-              #fileInput
-              (change)="onFileSelected($event)"
-              accept=".csv,.xlsx,.xls"
-              style="display: none">
+            <input type="file" #fileInput (change)="onFileSelected($event)" accept=".csv" style="display: none">
 
             <mat-form-field appearance="outline" class="flex-1">
-              <mat-label>Archivo</mat-label>
+              <mat-label>Archivo CSV</mat-label>
               <input matInput [value]="fileName" readonly formControlName="archivo">
-              <mat-error *ngIf="cargaForm.get('archivo')?.hasError('required')">Debe seleccionar un archivo</mat-error>
+              <mat-error *ngIf="cargaForm.get('archivo')?.hasError('required')">
+                Debe seleccionar un archivo
+              </mat-error>
             </mat-form-field>
 
-            <button
-              mat-raised-button
-              type="button"
-              class="boton-secundario ml-3"
-              (click)="fileInput.click()">
+            <button mat-raised-button type="button" class="boton-secundario ml-3" (click)="fileInput.click()">
               <mat-icon>upload_file</mat-icon>
               Seleccionar Archivo
             </button>
+          </div>
+        </div>
+
+        <!-- Mensaje de error -->
+        <div *ngIf="state.error" class="form-row">
+          <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
+            <div class="flex">
+              <div class="shrink-0">
+                <mat-icon class="text-red-400">error</mat-icon>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-red-700">{{ state.error }}</p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -80,9 +101,8 @@
             type="submit"
             class="boton-primario"
             style="width: 200px;"
-            [disabled]="!cargaForm.valid || !selectedFile">
-            <mat-icon>cloud_upload</mat-icon>
-            Cargar Productos
+            [disabled]="!cargaForm.valid || state.isLoading">
+            {{ state.isLoading ? 'Cargando...' : 'Cargar Productos' }}
           </button>
         </div>
 
