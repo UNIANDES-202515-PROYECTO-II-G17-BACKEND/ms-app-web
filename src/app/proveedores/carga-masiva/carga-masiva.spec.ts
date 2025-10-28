@@ -107,7 +107,7 @@ describe('CargaMasiva - Unit Tests', () => {
 
   it('debe recargar proveedores cuando cambia el país', () => {
     component.cargaForm.patchValue({ pais: 'mx', proveedor: '1' });
-    
+
     component.onPaisChange();
 
     expect(component.cargaForm.get('proveedor')?.value).toBe('');
@@ -241,7 +241,7 @@ describe('CargaMasiva - Unit Tests', () => {
       mockRouter,
       mockDialog
     );
-    
+
     expect(newComponent.selectedFile).toBeNull();
     expect(newComponent.fileName).toBe('');
     expect(newComponent.proveedores).toEqual([]);
