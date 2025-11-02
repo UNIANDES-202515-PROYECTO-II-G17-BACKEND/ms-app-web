@@ -80,12 +80,16 @@ mat-chip {
   font-size: 12px;
 }
 
-.controlado-si {
-  background-color: #ffeb3b !important;
-  color: #333 !important;
+::ng-deep mat-chip.controlado-si {
+  background-color: #7c4dff !important;
+  color: white !important;
 }
 
-.controlado-no {
+::ng-deep mat-chip.controlado-si .mdc-evolution-chip__text-label {
+  color: white !important;
+}
+
+::ng-deep mat-chip.controlado-no {
   background-color: #e0e0e0 !important;
   color: #666 !important;
 }
