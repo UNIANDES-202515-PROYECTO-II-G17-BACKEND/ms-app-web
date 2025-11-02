@@ -1,1 +1,169 @@
-<h2>En desarrollo</h2>
+<div class="productos-container">
+  <!-- Encabezado -->
+  <div class="header">
+    <h1>Consulta de Productos</h1>
+    <button mat-raised-button color="primary" (click)="cargarProductos()" [disabled]="cargandoProductos()">
+      <mat-icon>refresh</mat-icon>
+      Actualizar
+    </button>
+  </div>
+
+  <!-- Mensaje de error al cargar productos -->
+  <div *ngIf="errorProductos()" class="error-message">
+    <mat-icon>error</mat-icon>
+    {{ errorProductos() }}
+  </div>
+
+  <!-- Spinner de carga de productos -->
+  <div *ngIf="cargandoProductos()" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Cargando productos...</p>
+  </div>
+
+  <!-- Tabla de productos -->
+  <mat-card *ngIf="!cargandoProductos() && !errorProductos() && productos().length > 0" class="table-card">
+    <mat-card-content>
+      <table mat-table [dataSource]="productos()" class="productos-table">
+
+        <!-- Columna SKU -->
+        <ng-container matColumnDef="sku">
+          <th mat-header-cell *matHeaderCellDef>SKU</th>
+          <td mat-cell *matCellDef="let producto">{{ producto.sku }}</td>
+        </ng-container>
+
+        <!-- Columna Nombre -->
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef>Nombre</th>
+          <td mat-cell *matCellDef="let producto">{{ producto.nombre }}</td>
+        </ng-container>
+
+        <!-- Columna Categoría -->
+        <ng-container matColumnDef="categoria">
+          <th mat-header-cell *matHeaderCellDef>Categoría</th>
+          <td mat-cell *matCellDef="let producto">
+            <mat-chip>{{ producto.categoria }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Columna Controlado -->
+        <ng-container matColumnDef="controlado">
+          <th mat-header-cell *matHeaderCellDef>Controlado</th>
+          <td mat-cell *matCellDef="let producto">
+            <mat-chip [class.controlado-si]="producto.controlado" [class.controlado-no]="!producto.controlado">
+              {{ producto.controlado ? 'Sí' : 'No' }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Columna Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let producto">
+            <button mat-raised-button color="accent" (click)="verUbicaciones(producto)">
+              <mat-icon>location_on</mat-icon>
+              Ver Ubicaciones
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnasProductos"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnasProductos;"
+            [class.selected-row]="productoSeleccionado()?.id === row.id"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Mensaje si no hay productos -->
+  <div *ngIf="!cargandoProductos() && !errorProductos() && productos().length === 0" class="no-data">
+    <mat-icon>inventory_2</mat-icon>
+    <p>No hay productos disponibles</p>
+  </div>
+
+  <!-- Detalle de ubicaciones del producto seleccionado -->
+  <mat-card *ngIf="productoSeleccionado()" class="detalle-card">
+    <mat-card-header>
+      <mat-card-title>
+        <div class="detalle-header">
+          <div>
+            <h2>Ubicaciones del Producto</h2>
+            <p class="producto-info">
+              <strong>SKU:</strong> {{ productoSeleccionado()!.sku }} |
+              <strong>Nombre:</strong> {{ productoSeleccionado()!.nombre }} |
+              <strong>Categoría:</strong> {{ productoSeleccionado()!.categoria }}
+            </p>
+          </div>
+          <button mat-icon-button (click)="cerrarDetalle()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Mensaje de error al cargar ubicaciones -->
+      <div *ngIf="errorUbicaciones()" class="error-message">
+        <mat-icon>error</mat-icon>
+        {{ errorUbicaciones() }}
+      </div>
+
+      <!-- Spinner de carga de ubicaciones -->
+      <div *ngIf="cargandoUbicaciones()" class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Cargando ubicaciones...</p>
+      </div>
+
+      <!-- Tabla de ubicaciones -->
+      <div *ngIf="!cargandoUbicaciones() && !errorUbicaciones()">
+        <table mat-table [dataSource]="ubicaciones()" class="ubicaciones-table">
+
+          <!-- Columna Ciudad -->
+          <ng-container matColumnDef="ciudad">
+            <th mat-header-cell *matHeaderCellDef>Ciudad</th>
+            <td mat-cell *matCellDef="let ubicacion">{{ ubicacion.ciudad }}</td>
+          </ng-container>
+
+          <!-- Columna Pasillo -->
+          <ng-container matColumnDef="pasillo">
+            <th mat-header-cell *matHeaderCellDef>Pasillo</th>
+            <td mat-cell *matCellDef="let ubicacion">{{ ubicacion.pasillo }}</td>
+          </ng-container>
+
+          <!-- Columna Estante -->
+          <ng-container matColumnDef="estante">
+            <th mat-header-cell *matHeaderCellDef>Estante</th>
+            <td mat-cell *matCellDef="let ubicacion">{{ ubicacion.estante }}</td>
+          </ng-container>
+
+          <!-- Columna Posición -->
+          <ng-container matColumnDef="posicion">
+            <th mat-header-cell *matHeaderCellDef>Posición</th>
+            <td mat-cell *matCellDef="let ubicacion">{{ ubicacion.posicion }}</td>
+          </ng-container>
+
+          <!-- Columna Cantidad -->
+          <ng-container matColumnDef="cantidad">
+            <th mat-header-cell *matHeaderCellDef>Cantidad</th>
+            <td mat-cell *matCellDef="let ubicacion">
+              <strong>{{ ubicacion.cantidad }}</strong>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columnasUbicaciones"></tr>
+          <tr mat-row *matRowDef="let row; columns: columnasUbicaciones;"></tr>
+        </table>
+
+        <!-- Total de cantidad -->
+        <div *ngIf="ubicaciones().length > 0" class="total-cantidad">
+          <strong>Total en inventario: {{ getTotalCantidad() }} unidades</strong>
+        </div>
+
+        <!-- Mensaje si no hay ubicaciones -->
+        <div *ngIf="ubicaciones().length === 0" class="no-data">
+          <mat-icon>location_off</mat-icon>
+          <p>Este producto no tiene ubicaciones registradas</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+

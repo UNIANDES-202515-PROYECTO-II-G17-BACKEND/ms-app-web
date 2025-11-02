@@ -1,12 +1,91 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatChipsModule } from '@angular/material/chips';
+import { ProductosService } from './productos.service';
+import { Producto, UbicacionProducto } from './productos.interface';
 
 @Component({
   selector: 'app-productos',
   standalone: true,
-  imports: [],
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCardModule,
+    MatProgressSpinnerModule,
+    MatChipsModule
+  ],
   templateUrl: './productos.html',
   styleUrl: './productos.css'
 })
-export class Productos {
+export class Productos implements OnInit {
+  productos = signal<Producto[]>([]);
+  productoSeleccionado = signal<Producto | null>(null);
+  ubicaciones = signal<UbicacionProducto[]>([]);
+  cargandoProductos = signal(false);
+  cargandoUbicaciones = signal(false);
+  errorProductos = signal<string | null>(null);
+  errorUbicaciones = signal<string | null>(null);
 
+  columnasProductos: string[] = ['sku', 'nombre', 'categoria', 'controlado', 'acciones'];
+  columnasUbicaciones: string[] = ['ciudad', 'pasillo', 'estante', 'posicion', 'cantidad'];
+
+  constructor(private productosService: ProductosService) { }
+
+  ngOnInit(): void {
+    this.cargarProductos();
+  }
+
+  cargarProductos(): void {
+    this.cargandoProductos.set(true);
+    this.errorProductos.set(null);
+
+    this.productosService.obtenerProductos().subscribe({
+      next: (productos) => {
+        this.productos.set(productos);
+        this.cargandoProductos.set(false);
+      },
+      error: (error) => {
+        console.error('Error:', error);
+        this.errorProductos.set('Error al cargar productos');
+        this.cargandoProductos.set(false);
+      }
+    });
+  }
+
+  verUbicaciones(producto: Producto): void {
+    this.productoSeleccionado.set(producto);
+    this.cargandoUbicaciones.set(true);
+    this.errorUbicaciones.set(null);
+    this.ubicaciones.set([]);
+
+    this.productosService.obtenerUbicacionesProducto(producto.id).subscribe({
+      next: (ubicaciones) => {
+        this.ubicaciones.set(ubicaciones);
+        this.cargandoUbicaciones.set(false);
+      },
+      error: (error) => {
+        console.error('Error:', error);
+        this.errorUbicaciones.set('Error al cargar ubicaciones');
+        this.cargandoUbicaciones.set(false);
+      }
+    });
+  }
+
+  cerrarDetalle(): void {
+    this.productoSeleccionado.set(null);
+    this.ubicaciones.set([]);
+    this.errorUbicaciones.set(null);
+  }
+
+  getTotalCantidad(): number {
+    return this.ubicaciones().reduce((total, u) => total + u.cantidad, 0);
+  }
 }
+

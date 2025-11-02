@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CargaMasivaService } from './carga-masiva.service';
 import { PopupComponent } from '../../shared/popup/popup.component';
-import { CargaMasivaResponse } from './carga-masiva.interface';
+import { CargaMasivaResponse, Proveedor } from './carga-masiva.interface';
 
 @Component({
   selector: 'app-carga-masiva',
@@ -32,21 +32,14 @@ export class CargaMasiva implements OnInit {
   cargaForm!: FormGroup;
   selectedFile: File | null = null;
   fileName: string = '';
+  proveedores: Proveedor[] = [];
 
   // Estado del componente
   state = {
     isLoading: false,
+    loadingProveedores: false,
     error: null as string | null
   };
-
-  // Opciones para los selects
-  paises = [
-    { value: 'co', label: 'Colombia' },
-    { value: 'mx', label: 'México' },
-    { value: 'pe', label: 'Perú' },
-    { value: 'cl', label: 'Chile' },
-    { value: 'ar', label: 'Argentina' }
-  ];
 
   constructor(
     private fb: FormBuilder,
@@ -57,17 +50,58 @@ export class CargaMasiva implements OnInit {
 
   ngOnInit(): void {
     this.cargaForm = this.fb.group({
-      pais: ['', Validators.required],
+      pais: ['co', Validators.required],
+      proveedor: ['', Validators.required],
       archivo: ['', Validators.required]
+    });
+
+    // Cargar proveedores para el país por defecto
+    this.cargarProveedores('co');
+  }
+
+  onPaisChange(): void {
+    const pais = this.cargaForm.get('pais')?.value;
+    if (pais) {
+      this.cargaForm.patchValue({ proveedor: '' });
+      this.cargarProveedores(pais);
+    }
+  }
+
+  cargarProveedores(pais: string): void {
+    this.state.loadingProveedores = true;
+    this.state.error = null;
+
+    this.cargaMasivaService.obtenerProveedores(pais).subscribe({
+      next: (response: Proveedor[]) => {
+        // Filtrar solo proveedores activos
+        this.proveedores = response.filter(p => p.activo);
+        this.state.loadingProveedores = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar proveedores:', error);
+        this.state.loadingProveedores = false;
+        this.state.error = 'Error al cargar los proveedores. Por favor, intente nuevamente.';
+        this.proveedores = [];
+      }
     });
   }
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
+      // Validar que sea un archivo CSV
+      if (!file.name.toLowerCase().endsWith('.csv')) {
+        this.state.error = 'El archivo debe ser un CSV';
+        this.selectedFile = null;
+        this.fileName = '';
+        this.cargaForm.patchValue({ archivo: '' });
+        return;
+      }
+
       this.selectedFile = file;
       this.fileName = file.name;
       this.cargaForm.patchValue({ archivo: file.name });
+      this.state.error = null;
     }
   }
 
@@ -76,58 +110,62 @@ export class CargaMasiva implements OnInit {
       this.state.isLoading = true;
       this.state.error = null;
 
-      const country = this.cargaForm.value.pais || 'co';
+      const country = this.cargaForm.value.pais;
+      const proveedorId = this.cargaForm.value.proveedor;
 
-      this.cargaMasivaService.cargarProductosMasivos(this.selectedFile, country).subscribe({
+      this.cargaMasivaService.cargarProductosMasivos(this.selectedFile, country, proveedorId).subscribe({
         next: (response: CargaMasivaResponse) => {
           this.state.isLoading = false;
 
-          const mensaje = `
-            ${response.message || 'Carga masiva completada'}
+          const tieneErrores = response.errores && response.errores.length > 0;
+          const fallidos = response.total - response.insertados;
 
-            Productos procesados: ${response.productos_procesados || 0}
-            Exitosos: ${response.productos_exitosos || 0}
-            Fallidos: ${response.productos_fallidos || 0}
-          `;
+          let mensaje = `Carga completada exitosamente\n\n`;
+          mensaje += `Total de productos procesados: ${response.total}\n`;
+          mensaje += `Productos insertados: ${response.insertados}\n`;
 
-          // Mostrar popup de éxito
+          if (fallidos > 0) {
+            mensaje += `✗ Productos con errores: ${fallidos}`;
+          }
+
+          // Mostrar popup de éxito o warning
           const dialogRef = this.dialog.open(PopupComponent, {
             data: {
-              type: response.productos_fallidos ? 'warning' : 'success',
+              type: tieneErrores ? 'warning' : 'success',
               message: mensaje
             }
           });
 
-          // Regresar al home después de cerrar el popup
           dialogRef.afterClosed().subscribe(() => {
+            // Volver al home
             this.router.navigate(['/home']);
           });
         },
-        error: (error: any) => {
+        error: (error) => {
+          console.error('Error en la carga masiva:', error);
           this.state.isLoading = false;
 
-          // Extraer mensaje de error de la API
-          const errorMessage = error.error?.detail || error.error?.message || 'Error al procesar el archivo. Inténtalo de nuevo.';
+          const errorMessage = error.error?.message || error.error?.detail || 'Error al cargar los productos. Por favor, verifique el archivo e intente nuevamente.';
+
           this.state.error = errorMessage;
 
-          // Mostrar popup de error
-          this.dialog.open(PopupComponent, {
+          // También mostrar popup de error
+          const dialogRef = this.dialog.open(PopupComponent, {
             data: {
               type: 'error',
               message: errorMessage
             }
+          });
+
+          dialogRef.afterClosed().subscribe(() => {
+            // Volver al home
+            this.router.navigate(['/home']);
           });
         }
       });
     }
   }
 
-  // Getter para facilitar el acceso al estado de loading en el template
-  get isLoading(): boolean {
-    return this.state.isLoading;
-  }
-
-  // Método para volver al home
   goBack(): void {
     this.router.navigate(['/home']);
   }

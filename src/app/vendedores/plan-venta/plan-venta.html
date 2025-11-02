@@ -1,1 +1,130 @@
-<p>plan-venta works!</p>
+<div class="p-6">
+  <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-6">
+    <h2 class="text-2xl font-bold text-purple-600 mb-6">Crear Plan de Venta</h2>
+
+    <form [formGroup]="planForm" (ngSubmit)="onSubmit()">
+      <div class="form-container">
+
+        <!-- Vendedor y Periodo -->
+        <div class="form-row grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <mat-form-field appearance="outline">
+            <mat-label>Vendedor</mat-label>
+            <mat-select formControlName="id_vendedor" [disabled]="state.loadingVendedores">
+              <mat-option *ngFor="let vendedor of vendedores" [value]="vendedor.id">
+                {{ vendedor.full_name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="planForm.get('id_vendedor')?.hasError('required')">El vendedor es requerido</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Periodo</mat-label>
+            <mat-select formControlName="periodo">
+              <mat-option *ngFor="let periodo of periodos" [value]="periodo.value">{{ periodo.label }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="planForm.get('periodo')?.hasError('required')">El periodo es requerido</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Territorio -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Territorio</mat-label>
+            <input matInput formControlName="territorio">
+            <mat-error *ngIf="planForm.get('territorio')?.hasError('required')">El territorio es requerido</mat-error>
+            <mat-error *ngIf="planForm.get('territorio')?.hasError('minlength')">El territorio debe tener al menos 3 caracteres</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Metas -->
+        <div class="form-row grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <mat-form-field appearance="outline">
+            <mat-label>Meta Monto ($)</mat-label>
+            <input matInput type="number" formControlName="meta_monto" step="0.01">
+            <mat-error *ngIf="planForm.get('meta_monto')?.hasError('required')">La meta de monto es requerida</mat-error>
+            <mat-error *ngIf="planForm.get('meta_monto')?.hasError('min')">Debe ser mayor o igual a 0</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Meta Unidades</mat-label>
+            <input matInput type="number" formControlName="meta_unidades">
+            <mat-error *ngIf="planForm.get('meta_unidades')?.hasError('required')">La meta de unidades es requerida</mat-error>
+            <mat-error *ngIf="planForm.get('meta_unidades')?.hasError('min')">Debe ser al menos 1</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Meta Clientes</mat-label>
+            <input matInput type="number" formControlName="meta_clientes">
+            <mat-error *ngIf="planForm.get('meta_clientes')?.hasError('required')">La meta de clientes es requerida</mat-error>
+            <mat-error *ngIf="planForm.get('meta_clientes')?.hasError('min')">Debe ser al menos 1</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Fechas -->
+        <div class="form-row grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha Inicio</mat-label>
+            <input matInput [matDatepicker]="pickerInicio" formControlName="fecha_inicio">
+            <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+            <mat-datepicker #pickerInicio></mat-datepicker>
+            <mat-error *ngIf="planForm.get('fecha_inicio')?.hasError('required')">La fecha de inicio es requerida</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha Fin</mat-label>
+            <input matInput [matDatepicker]="pickerFin" formControlName="fecha_fin">
+            <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+            <mat-datepicker #pickerFin></mat-datepicker>
+            <mat-error *ngIf="planForm.get('fecha_fin')?.hasError('required')">La fecha de fin es requerida</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Productos -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="productos-field">
+            <mat-label>Productos</mat-label>
+            <mat-select formControlName="ids_productos" multiple [disabled]="state.loadingProductos">
+              <mat-select-trigger>
+                <div class="chips-container">
+                  <span class="chip" *ngFor="let productoId of planForm.get('ids_productos')?.value">
+                    {{ obtenerNombreProducto(productoId) }}
+                  </span>
+                </div>
+              </mat-select-trigger>
+              <mat-option *ngFor="let producto of productos" [value]="producto.id">
+                {{ producto.nombre }} ({{ producto.sku }})
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="planForm.get('ids_productos')?.hasError('required') || planForm.get('ids_productos')?.hasError('atLeastOne')">Debe seleccionar al menos un producto</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Cliente Objetivo -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Cliente Objetivo</mat-label>
+            <mat-select formControlName="id_cliente_objetivo" [disabled]="state.loadingClientes">
+              <mat-option *ngFor="let cliente of clientes" [value]="cliente.id">
+                {{ cliente.institution_name || cliente.full_name }}{{ cliente.city ? ' - ' + cliente.city : '' }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="planForm.get('id_cliente_objetivo')?.hasError('required')">El cliente objetivo es requerido</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Botones -->
+        <div class="form-buttons">
+          <button mat-outlined-button type="button" class="boton-secundario" style="width: 200px;" (click)="goBack()">
+            Volver
+          </button>
+          <button
+            mat-flat-button
+            type="submit"
+            class="boton-primario"
+            style="width: 200px;"
+            [disabled]="!planForm.valid || state.isLoading">
+            {{ state.isLoading ? 'Creando...' : 'Crear Plan' }}
+          </button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+

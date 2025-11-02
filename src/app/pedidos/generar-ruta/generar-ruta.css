@@ -1,0 +1,110 @@
+mat-form-field {
+  width: 100%;
+}
+
+h2 {
+  color: #7c4dff !important;
+}
+
+/* Sobrescribir completamente los estilos de Material Design */
+::ng-deep .boton-primario.mat-mdc-button {
+  background-color: #7c4dff !important;
+  color: white !important;
+  border-radius: 6px !important;
+  padding: 10px 20px !important;
+  transition: all 0.3s ease !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .boton-primario.mat-mdc-button:disabled {
+  background-color: #cccccc !important;
+  color: #666666 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+}
+
+::ng-deep .boton-secundario.mat-mdc-button {
+  color: #7c4dff !important;
+  border: 1px solid #7c4dff !important;
+  border-radius: 6px !important;
+  padding: 10px 20px !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .boton-secundario.mat-mdc-button:hover {
+  background-color: #7c4dff !important;
+  color: white !important;
+}
+
+::ng-deep .boton-primario .mat-mdc-button-touch-target,
+::ng-deep .boton-secundario .mat-mdc-button-touch-target {
+  display: none !important;
+}
+
+/* Estilos adicionales para forzar el diseño */
+.boton-primario {
+  background-color: #7c4dff !important;
+  color: white !important;
+  border-radius: 6px !important;
+  padding: 10px 20px !important;
+  transition: all 0.3s ease !important;
+}
+
+.boton-primario:disabled {
+  background-color: #cccccc !important;
+  color: #666666 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+}
+
+.boton-secundario {
+  color: #7c4dff !important;
+  border: 1px solid #7c4dff !important;
+  border-radius: 6px !important;
+  padding: 10px 20px !important;
+  background-color: transparent !important;
+}
+
+.boton-secundario:hover {
+  background-color: #7c4dff !important;
+  color: white !important;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+}
+
+.form-row > * {
+  flex: 1;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 16px;
+}
+
+.loading-container p {
+  color: #666;
+  font-size: 14px;
+}
