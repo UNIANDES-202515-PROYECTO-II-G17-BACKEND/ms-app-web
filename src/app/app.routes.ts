@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -13,6 +14,7 @@ export const routes: Routes = [
   {
     path: 'home',
     loadComponent: () => import('./home/home.component').then(m => m.HomeComponent),
+    canActivate: [authGuard], // 🔒 Proteger toda la ruta home
     children: [
       // Rutas de Proveedores
       { path: 'proveedores/registro', loadComponent: () => import('./proveedores/registro-proveedores/registro-proveedores').then(m => m.RegistroProveedores) },
