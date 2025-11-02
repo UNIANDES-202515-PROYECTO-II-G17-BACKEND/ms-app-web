@@ -23,6 +23,18 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  background-color: #7c4dff !important;
+  color: white !important;
+  border-radius: 6px !important;
+  padding: 10px 20px !important;
+  transition: all 0.3s ease !important;
+}
+
+.header button:disabled {
+  background-color: #cccccc !important;
+  color: #666666 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
 }
 
 .error-message {
@@ -144,6 +156,24 @@ mat-chip {
   margin-top: 16px;
   font-size: 16px;
   color: #7c4dff;
+}
+
+/* Estilos para botones de acción en la tabla */
+.productos-table button {
+  background-color: #7c4dff !important;
+  color: white !important;
+  border-radius: 6px !important;
+  padding: 8px 16px !important;
+  transition: all 0.3s ease !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.productos-table button:hover {
+  background-color: #6a3de8 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(124, 77, 255, 0.3) !important;
 }
 
 /* Scroll personalizado para mejor UX */

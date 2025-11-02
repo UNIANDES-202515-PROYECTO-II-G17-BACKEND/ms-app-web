@@ -1,1 +1,86 @@
-<p>generar-ruta works!</p>
+<div class="p-6">
+  <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-8">
+    <h2 class="text-3xl font-bold text-purple-600 mb-6 flex items-center gap-2">
+      <mat-icon>route</mat-icon>
+      Generar Ruta de Entrega
+    </h2>
+
+    <div class="mb-6">
+      <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4 rounded-r-lg">
+        <div class="flex">
+          <div class="ml-3">
+            <p class="text-sm text-blue-700">
+              <strong>Información:</strong> Seleccione una fecha de compromiso para generar la ruta de entrega.
+            </p>
+            <p class="text-sm text-blue-700 mt-2">
+              Solo se muestran fechas de pedidos con estado "APROBADO".
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spinner de carga -->
+    <div *ngIf="loadingPedidos()" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Cargando pedidos disponibles...</p>
+    </div>
+
+    <!-- Formulario -->
+    <form *ngIf="!loadingPedidos()" [formGroup]="rutaForm" (ngSubmit)="onSubmit()">
+      <div class="form-container">
+
+        <!-- Fecha de Compromiso -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de Compromiso</mat-label>
+            <mat-select formControlName="fecha" [disabled]="fechasDisponibles().length === 0">
+              <mat-option *ngFor="let fecha of fechasDisponibles()" [value]="fecha">
+                {{ fecha }} ({{ getPedidosPorFecha(fecha) }} pedidos)
+              </mat-option>
+            </mat-select>
+            <mat-hint *ngIf="fechasDisponibles().length === 0">
+              No hay pedidos aprobados disponibles
+            </mat-hint>
+            <mat-error *ngIf="rutaForm.get('fecha')?.hasError('required')">
+              Debe seleccionar una fecha
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Mensaje de error -->
+        <div *ngIf="error()" class="form-row">
+          <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
+            <div class="flex">
+              <div class="shrink-0">
+                <mat-icon class="text-red-400">error</mat-icon>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-red-700">{{ error() }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="form-buttons">
+          <button mat-button type="button" class="boton-secundario" style="width: 200px;" (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Volver
+          </button>
+          <button
+            mat-button
+            type="submit"
+            class="boton-primario"
+            style="width: 200px;"
+            [disabled]="!rutaForm.valid || generandoRuta() || fechasDisponibles().length === 0">
+            <mat-icon *ngIf="generandoRuta()">hourglass_empty</mat-icon>
+            <mat-icon *ngIf="!generandoRuta()">route</mat-icon>
+            {{ generandoRuta() ? 'Generando...' : 'Generar Ruta' }}
+          </button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
