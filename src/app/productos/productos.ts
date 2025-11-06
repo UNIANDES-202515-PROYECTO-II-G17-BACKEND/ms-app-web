@@ -6,6 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { ProductosService } from './productos.service';
 import { Producto, UbicacionProducto } from './productos.interface';
 
@@ -19,7 +21,9 @@ import { Producto, UbicacionProducto } from './productos.interface';
     MatIconModule,
     MatCardModule,
     MatProgressSpinnerModule,
-    MatChipsModule
+    MatChipsModule,
+    MatSelectModule,
+    MatFormFieldModule
   ],
   templateUrl: './productos.html',
   styleUrl: './productos.css'
@@ -32,9 +36,17 @@ export class Productos implements OnInit {
   cargandoUbicaciones = signal(false);
   errorProductos = signal<string | null>(null);
   errorUbicaciones = signal<string | null>(null);
+  paisSeleccionado = signal('co');
 
   columnasProductos: string[] = ['sku', 'nombre', 'categoria', 'controlado', 'acciones'];
   columnasUbicaciones: string[] = ['ciudad', 'pasillo', 'estante', 'posicion', 'cantidad'];
+
+  paises = [
+    { codigo: 'co', nombre: 'Colombia' },
+    { codigo: 'mx', nombre: 'México' },
+    { codigo: 'pe', nombre: 'Perú' },
+    { codigo: 'ec', nombre: 'Ecuador' }
+  ];
 
   constructor(private productosService: ProductosService) { }
 
@@ -45,8 +57,9 @@ export class Productos implements OnInit {
   cargarProductos(): void {
     this.cargandoProductos.set(true);
     this.errorProductos.set(null);
+    this.cerrarDetalle(); // Cerrar detalle al cambiar país
 
-    this.productosService.obtenerProductos().subscribe({
+    this.productosService.obtenerProductos(this.paisSeleccionado()).subscribe({
       next: (productos) => {
         this.productos.set(productos);
         this.cargandoProductos.set(false);
@@ -59,13 +72,18 @@ export class Productos implements OnInit {
     });
   }
 
+  onPaisChange(pais: string): void {
+    this.paisSeleccionado.set(pais);
+    this.cargarProductos();
+  }
+
   verUbicaciones(producto: Producto): void {
     this.productoSeleccionado.set(producto);
     this.cargandoUbicaciones.set(true);
     this.errorUbicaciones.set(null);
     this.ubicaciones.set([]);
 
-    this.productosService.obtenerUbicacionesProducto(producto.id).subscribe({
+    this.productosService.obtenerUbicacionesProducto(producto.id, this.paisSeleccionado()).subscribe({
       next: (ubicaciones) => {
         this.ubicaciones.set(ubicaciones);
         this.cargandoUbicaciones.set(false);

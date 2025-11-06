@@ -118,7 +118,7 @@ describe('GenerarRuta - Unit Tests', () => {
     expect(newComponent.loadingPedidos()).toBeFalse();
     expect(newComponent.generandoRuta()).toBeFalse();
     expect(newComponent.error()).toBeNull();
-    expect(newComponent.country).toBe('co');
+    expect(newComponent.paisSeleccionado()).toBe('co');
   });
 
   it('debe cargar y filtrar pedidos aprobados al inicializar', (done) => {
@@ -274,6 +274,35 @@ describe('GenerarRuta - Unit Tests', () => {
   it('debe navegar hacia atrás al home', () => {
     component.goBack();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
+  });
+
+  it('debe cambiar país y recargar pedidos', () => {
+    component.rutaForm.patchValue({ fecha: '2024-11-15' });
+
+    component.onPaisChange('mx');
+
+    expect(component.paisSeleccionado()).toBe('mx');
+    expect(component.rutaForm.get('fecha')?.value).toBe('');
+    expect(mockGenerarRutaService.obtenerPedidos).toHaveBeenCalledWith('mx');
+  });
+
+  it('debe obtener nombre del país correctamente', () => {
+    expect(component.getNombrePais()).toBe('Colombia');
+
+    component.paisSeleccionado.set('mx');
+    expect(component.getNombrePais()).toBe('México');
+
+    component.paisSeleccionado.set('xx');
+    expect(component.getNombrePais()).toBe('xx');
+  });
+
+  it('debe tener la lista de países correcta', () => {
+    expect(component.paises).toEqual([
+      { codigo: 'co', nombre: 'Colombia' },
+      { codigo: 'mx', nombre: 'México' },
+      { codigo: 'pe', nombre: 'Perú' },
+      { codigo: 'ec', nombre: 'Ecuador' }
+    ]);
   });
 
 
