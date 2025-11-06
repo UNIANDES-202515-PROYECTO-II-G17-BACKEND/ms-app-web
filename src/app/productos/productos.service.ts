@@ -13,12 +13,13 @@ export class ProductosService {
 
   /**
    * Obtener todos los productos
+   * @param country - País para consultar (co, mx, pe, ec)
    * @param limit - Cantidad de productos a retornar
    * @param offset - Desplazamiento para paginación
    */
-  obtenerProductos(limit: number = 100, offset: number = 0): Observable<Producto[]> {
+  obtenerProductos(country: string = 'co', limit: number = 100, offset: number = 0): Observable<Producto[]> {
     const headers = new HttpHeaders({
-      'X-Country': 'co'
+      'X-Country': country
     });
 
     return this.http.get<Producto[]>(
@@ -30,10 +31,11 @@ export class ProductosService {
   /**
    * Obtener las ubicaciones de un producto específico
    * @param productoId - ID del producto
+   * @param country - País para consultar (co, mx, pe, ec)
    */
-  obtenerUbicacionesProducto(productoId: string): Observable<UbicacionProducto[]> {
+  obtenerUbicacionesProducto(productoId: string, country: string = 'co'): Observable<UbicacionProducto[]> {
     const headers = new HttpHeaders({
-      'X-Country': 'co'
+      'X-Country': country
     });
 
     return this.http.get<UbicacionProducto[]>(
