@@ -108,3 +108,60 @@ h2 {
   color: #666;
   font-size: 14px;
 }
+
+.pais-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.pais-selector {
+  width: 250px;
+}
+
+.pais-selector .mat-mdc-form-field-infix {
+  min-height: 40px;
+}
+
+.no-fechas-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 24px;
+  background-color: #f3f0ff;
+  border: 1px solid #7c4dff;
+  border-radius: 8px;
+  border-left: 4px solid #7c4dff;
+}
+
+.no-fechas-icon {
+  color: #7c4dff;
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.no-fechas-content {
+  flex: 1;
+}
+
+.no-fechas-content h3 {
+  margin: 0 0 12px 0;
+  color: #495057;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.no-fechas-content p {
+  margin: 8px 0;
+  color: #6c757d;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.no-fechas-content .suggestion {
+  color: #495057;
+  font-weight: 500;
+  margin-top: 16px;
+}

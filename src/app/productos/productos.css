@@ -9,14 +9,37 @@
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 20px;
+  gap: 20px;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
 }
 
 .header h1 {
   margin: 0;
   color: #7c4dff !important;
   font-size: 28px;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.pais-selector {
+  width: 250px;
+}
+
+.pais-selector .mat-mdc-form-field-infix {
+  min-height: 40px;
 }
 
 .header button {
@@ -203,7 +226,20 @@ mat-chip {
   .header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: 16px;
+  }
+
+  .header-left {
+    width: 100%;
+  }
+
+  .header-controls {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .pais-selector {
+    width: 100%;
   }
 
   .header h1 {

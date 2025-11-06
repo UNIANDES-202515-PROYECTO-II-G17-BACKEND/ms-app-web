@@ -37,7 +37,14 @@ export class GenerarRuta implements OnInit {
   loadingPedidos = signal(false);
   generandoRuta = signal(false);
   error = signal<string | null>(null);
-  country = 'co';
+  paisSeleccionado = signal('co');
+
+  paises = [
+    { codigo: 'co', nombre: 'Colombia' },
+    { codigo: 'mx', nombre: 'México' },
+    { codigo: 'pe', nombre: 'Perú' },
+    { codigo: 'ec', nombre: 'Ecuador' }
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -61,7 +68,7 @@ export class GenerarRuta implements OnInit {
     this.fechasDisponibles.set([]);
     this.pedidosAprobados.set([]);
 
-    this.generarRutaService.obtenerPedidos(this.country).subscribe({
+    this.generarRutaService.obtenerPedidos(this.paisSeleccionado()).subscribe({
       next: (pedidos: Pedido[]) => {
         console.log('Pedidos recibidos del servicio:', pedidos);
 
@@ -97,7 +104,7 @@ export class GenerarRuta implements OnInit {
 
       const fecha = this.rutaForm.value.fecha;
 
-      this.generarRutaService.generarRuta(fecha, this.country).subscribe({
+      this.generarRutaService.generarRuta(fecha, this.paisSeleccionado()).subscribe({
         next: (response: GenerarRutaResponse) => {
           this.generandoRuta.set(false);
 
@@ -135,8 +142,19 @@ export class GenerarRuta implements OnInit {
     }
   }
 
+  onPaisChange(pais: string): void {
+    this.paisSeleccionado.set(pais);
+    this.rutaForm.patchValue({ fecha: '' }); // Limpiar fecha seleccionada
+    this.cargarPedidos();
+  }
+
   getPedidosPorFecha(fecha: string): number {
     return this.pedidosAprobados().filter(pedido => pedido.fecha_compromiso === fecha).length;
+  }
+
+  getNombrePais(): string {
+    const pais = this.paises.find(p => p.codigo === this.paisSeleccionado());
+    return pais ? pais.nombre : this.paisSeleccionado();
   }
 
   goBack(): void {

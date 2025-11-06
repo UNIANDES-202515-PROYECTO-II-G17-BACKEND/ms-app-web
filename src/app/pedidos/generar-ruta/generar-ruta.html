@@ -20,6 +20,18 @@
       </div>
     </div>
 
+    <!-- Selector de País -->
+    <div *ngIf="!loadingPedidos()" class="pais-container mb-6">
+      <mat-form-field appearance="outline" class="pais-selector">
+        <mat-label>País</mat-label>
+        <mat-select [value]="paisSeleccionado()" (selectionChange)="onPaisChange($event.value)" [disabled]="loadingPedidos()">
+          <mat-option *ngFor="let pais of paises" [value]="pais.codigo">
+            {{ pais.nombre }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
     <!-- Spinner de carga -->
     <div *ngIf="loadingPedidos()" class="loading-container">
       <mat-spinner diameter="40"></mat-spinner>
@@ -32,20 +44,29 @@
 
         <!-- Fecha de Compromiso -->
         <div class="form-row">
-          <mat-form-field appearance="outline">
+          <!-- Si hay fechas disponibles -->
+          <mat-form-field appearance="outline" *ngIf="fechasDisponibles().length > 0">
             <mat-label>Fecha de Compromiso</mat-label>
-            <mat-select formControlName="fecha" [disabled]="fechasDisponibles().length === 0">
+            <mat-select formControlName="fecha">
               <mat-option *ngFor="let fecha of fechasDisponibles()" [value]="fecha">
                 {{ fecha }} ({{ getPedidosPorFecha(fecha) }} pedidos)
               </mat-option>
             </mat-select>
-            <mat-hint *ngIf="fechasDisponibles().length === 0">
-              No hay pedidos aprobados disponibles
-            </mat-hint>
+            <mat-hint>Seleccione la fecha para generar la ruta</mat-hint>
             <mat-error *ngIf="rutaForm.get('fecha')?.hasError('required')">
               Debe seleccionar una fecha
             </mat-error>
           </mat-form-field>
+
+          <!-- Si no hay fechas disponibles -->
+          <div *ngIf="fechasDisponibles().length === 0" class="no-fechas-container">
+            <mat-icon class="no-fechas-icon">calendar_today</mat-icon>
+            <div class="no-fechas-content">
+              <h3>No hay pedidos aprobados disponibles</h3>
+              <p>No se encontraron pedidos con estado "APROBADO" para el país seleccionado ({{ getNombrePais() }}).</p>
+              <p class="suggestion">Intente seleccionar otro país o verifique que existan pedidos aprobados.</p>
+            </div>
+          </div>
         </div>
 
         <!-- Mensaje de error -->

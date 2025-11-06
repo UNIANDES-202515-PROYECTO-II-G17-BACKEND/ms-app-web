@@ -1,15 +1,27 @@
 <div class="productos-container">
   <!-- Encabezado -->
-  <div class="header">
-    <h1>Consulta de Productos</h1>
-    <button mat-raised-button color="primary" (click)="cargarProductos()" [disabled]="cargandoProductos()">
-      <mat-icon>refresh</mat-icon>
-      Actualizar
-    </button>
+  <div class="header" *ngIf="!cargandoProductos()">
+    <div class="header-left">
+      <h1>Consulta de Productos</h1>
+      <mat-form-field appearance="outline" class="pais-selector mt-4">
+        <mat-label>País</mat-label>
+        <mat-select [value]="paisSeleccionado()" (selectionChange)="onPaisChange($event.value)" [disabled]="cargandoProductos()">
+          <mat-option *ngFor="let pais of paises" [value]="pais.codigo">
+            {{ pais.nombre }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="header-controls">
+      <button mat-raised-button color="primary" (click)="cargarProductos()" [disabled]="cargandoProductos()">
+        <mat-icon>refresh</mat-icon>
+        Actualizar
+      </button>
+    </div>
   </div>
 
   <!-- Mensaje de error al cargar productos -->
-  <div *ngIf="errorProductos()" class="error-message">
+  <div *ngIf="errorProductos() && !cargandoProductos()" class="error-message">
     <mat-icon>error</mat-icon>
     {{ errorProductos() }}
   </div>
