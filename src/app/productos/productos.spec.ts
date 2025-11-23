@@ -55,6 +55,7 @@ describe('Productos - Unit Tests', () => {
   });
 
   it('debe manejar error al cargar productos', (done) => {
+    spyOn(console, 'error');
     mockProductosService.obtenerProductos.and.returnValue(throwError(() => new Error('Error')));
 
     component.cargarProductos();
@@ -62,6 +63,7 @@ describe('Productos - Unit Tests', () => {
     setTimeout(() => {
       expect(component.cargandoProductos()).toBe(false);
       expect(component.errorProductos()).toBe('Error al cargar productos');
+      expect(console.error).toHaveBeenCalledWith('Error:', jasmine.any(Error));
       done();
     }, 10);
   });
@@ -81,6 +83,7 @@ describe('Productos - Unit Tests', () => {
   });
 
   it('debe manejar error al cargar ubicaciones', (done) => {
+    spyOn(console, 'error');
     mockProductosService.obtenerUbicacionesProducto.and.returnValue(throwError(() => new Error('Error')));
 
     component.verUbicaciones(mockProductos[0]);
@@ -88,6 +91,7 @@ describe('Productos - Unit Tests', () => {
     setTimeout(() => {
       expect(component.errorUbicaciones()).toBe('Error al cargar ubicaciones');
       expect(component.cargandoUbicaciones()).toBe(false);
+      expect(console.error).toHaveBeenCalledWith('Error:', jasmine.any(Error));
       done();
     }, 10);
   });

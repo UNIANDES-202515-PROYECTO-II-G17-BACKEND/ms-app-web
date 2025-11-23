@@ -139,6 +139,7 @@ describe('GenerarRuta - Unit Tests', () => {
   });
 
   it('debe manejar error al cargar pedidos', (done) => {
+    spyOn(console, 'error');
     mockGenerarRutaService.obtenerPedidos.and.returnValue(throwError(() => new Error('Error de red')));
 
     component.cargarPedidos();
@@ -148,6 +149,7 @@ describe('GenerarRuta - Unit Tests', () => {
       expect(component.error()).toBe('Error al cargar los pedidos. Por favor, intente nuevamente.');
       expect(component.fechasDisponibles()).toEqual([]);
       expect(component.pedidosAprobados()).toEqual([]);
+      expect(console.error).toHaveBeenCalledWith('Error al cargar pedidos:', jasmine.any(Error));
       done();
     }, 10);
   });
