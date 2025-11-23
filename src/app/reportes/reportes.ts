@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ReportesService } from './reportes.service';
-import { Vendedor, Visita } from './reportes.interface';
+import { Vendedor, Visita, PlanVentaCompleto } from './reportes.interface';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -42,8 +42,10 @@ export class Reportes {
   paisSeleccionado = signal<string>('');
   vendedores = signal<Vendedor[]>([]);
   visitas = signal<Visita[]>([]);
+  planesVenta = signal<PlanVentaCompleto[]>([]);
   cargandoVendedores = signal<boolean>(false);
   cargandoVisitas = signal<boolean>(false);
+  cargandoPlanesVenta = signal<boolean>(false);
 
   // Datos estáticos
   paises = [
@@ -53,10 +55,9 @@ export class Reportes {
     { codigo: 'ec', nombre: 'Ecuador' }
   ];
 
-  // Columnas para la tabla de visitas
+  // Columnas para las tablas
   visitasColumns: string[] = ['cliente', 'direccion', 'ciudad', 'contacto', 'fecha', 'estado'];
-
-  constructor(
+  planesVentaColumns: string[] = ['vendedor', 'cliente', 'territorio', 'periodo', 'meta_monto', 'meta_unidades', 'productos', 'fechas', 'estado'];  constructor(
     private fb: FormBuilder,
     private reportesService: ReportesService
   ) {
@@ -128,6 +129,14 @@ export class Reportes {
   getNombreVendedor(id: number): string {
     const vendedor = this.vendedores().find(v => v.id === id);
     return vendedor ? vendedor.full_name : '';
+  }
+
+  getPlanesActivos(): number {
+    return this.planesVenta().filter(plan => plan.activo).length;
+  }
+
+  getPlanesInactivos(): number {
+    return this.planesVenta().filter(plan => !plan.activo).length;
   }
 
   generarPDF(): void {
@@ -203,6 +212,128 @@ export class Reportes {
 
     // Descargar PDF
     const fileName = `reporte-visitas-${vendedorNombre.replace(/\s+/g, '-').toLowerCase()}-${fechaFormateada}.pdf`;
+    doc.save(fileName);
+  }
+
+  // Métodos para planes de venta
+  onPaisChangePlanesVenta(pais: string): void {
+    this.paisSeleccionado.set(pais);
+    this.planesVenta.set([]); // Limpiar datos anteriores
+    this.cargarPlanesVenta(pais);
+  }
+
+  cargarPlanesVenta(pais: string): void {
+    this.cargandoPlanesVenta.set(true);
+    this.planesVenta.set([]); // Asegurar que esté vacío durante la carga
+
+    this.reportesService.getPlanesVentaCompletos(pais).subscribe({
+      next: (planes) => {
+        console.log('Planes recibidos:', planes); // Debug
+        this.planesVenta.set(planes || []); // Asegurar que nunca sea null/undefined
+        this.cargandoPlanesVenta.set(false);
+      },
+      error: (error) => {
+        console.error('Error cargando planes de venta:', error);
+        this.planesVenta.set([]); // Asegurar array vacío en caso de error
+        this.cargandoPlanesVenta.set(false);
+      }
+    });
+  }
+
+  formatearMonto(monto: number): string {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0
+    }).format(monto);
+  }
+
+  formatearPeriodo(fechaInicio: string, fechaFin: string): string {
+    const inicio = new Date(fechaInicio).toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+    const fin = new Date(fechaFin).toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+    return `${inicio} - ${fin}`;
+  }
+
+  generarPDFPlanesVenta(): void {
+    const doc = new jsPDF('l', 'mm', 'a4'); // Formato horizontal para más espacio
+    const planes = this.planesVenta();
+    const paisNombre = this.getNombrePais(this.paisSeleccionado());
+
+    // Configurar documento
+    doc.setFontSize(20);
+    doc.setTextColor(124, 77, 255);
+    doc.text('Reporte de Planes de Venta', 20, 20);
+
+    // Información del reporte
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`País: ${paisNombre}`, 20, 35);
+    doc.text(`Total de planes: ${planes.length}`, 20, 45);
+    doc.text(`Fecha de generación: ${new Date().toLocaleDateString('es-ES')}`, 20, 55);
+
+    // Preparar datos para la tabla
+    const tableData = planes.map(plan => [
+      plan.vendedor_nombre,
+      plan.cliente_objetivo_nombre,
+      plan.territorio,
+      plan.periodo.charAt(0).toUpperCase() + plan.periodo.slice(1),
+      this.formatearMonto(plan.meta_monto),
+      plan.meta_unidades.toString(),
+      plan.meta_clientes.toString(),
+      `${plan.productos_count} productos`,
+      this.formatearPeriodo(plan.fecha_inicio, plan.fecha_fin),
+      plan.activo ? 'Activo' : 'Inactivo'
+    ]);
+
+    // Generar tabla
+    autoTable(doc, {
+      head: [['Vendedor', 'Cliente', 'Territorio', 'Período', 'Meta Monto', 'Meta Unidades', 'Meta Clientes', 'Productos', 'Fechas', 'Estado']],
+      body: tableData,
+      startY: 65,
+      theme: 'striped',
+      headStyles: {
+        fillColor: [124, 77, 255],
+        textColor: 255,
+        fontSize: 8,
+        fontStyle: 'bold'
+      },
+      bodyStyles: {
+        fontSize: 7
+      },
+      alternateRowStyles: {
+        fillColor: [248, 249, 250]
+      },
+      margin: { top: 65, left: 20, right: 20, bottom: 20 }
+    });
+
+    // Agregar pie de página manualmente
+    const pageCount = (doc as any).internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(128, 128, 128);
+      doc.text(
+        'MediSupply - Sistema de Gestión Médica',
+        20,
+        doc.internal.pageSize.height - 10
+      );
+      doc.text(
+        `Página ${i} de ${pageCount}`,
+        doc.internal.pageSize.width - 40,
+        doc.internal.pageSize.height - 10
+      );
+    }
+
+    // Descargar PDF
+    const fileName = `reporte-planes-venta-${paisNombre.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`;
     doc.save(fileName);
   }
 }
