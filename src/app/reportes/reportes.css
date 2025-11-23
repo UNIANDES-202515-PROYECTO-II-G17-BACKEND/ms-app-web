@@ -148,32 +148,32 @@ mat-form-field {
 }
 
 .boton-generar {
-  background-color: #7c4dff !important;
-  color: white !important;
-  padding: 12px 32px !important;
-  border-radius: 8px !important;
-  font-weight: 600 !important;
-  font-size: 16px !important;
-  height: 48px !important;
-  min-width: 200px !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 4px 12px rgba(124, 77, 255, 0.3) !important;
+  background-color: #7c4dff;
+  color: white;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  height: 48px;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(124, 77, 255, 0.3);
 }
 
 .boton-generar:hover:not(:disabled) {
-  background-color: #6a3de8 !important;
+  background-color: #6a3de8;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(124, 77, 255, 0.4) !important;
+  box-shadow: 0 6px 16px rgba(124, 77, 255, 0.4);
 }
 
 .boton-generar:disabled {
-  background-color: #cccccc !important;
-  color: #666666 !important;
-  box-shadow: none !important;
-  transform: none !important;
+  background-color: #cccccc;
+  color: #666666;
+  box-shadow: none;
+  transform: none;
 }
 
 .boton-generar mat-icon {
