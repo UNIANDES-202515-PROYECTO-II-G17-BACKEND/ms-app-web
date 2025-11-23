@@ -1,7 +1,150 @@
 <div class="container p-4">
   <h2 class="mb-4">Reportes</h2>
-  <div class="card p-4">
-    <p>Aquí podrás generar y visualizar reportes del sistema MediSupply.</p>
-    <p><em>Funcionalidad en desarrollo...</em></p>
-  </div>
+
+  <mat-tab-group>
+    <!-- Tab de Visitas -->
+    <mat-tab label="Reporte de Visitas Pendientes">
+      <div class="tab-content">
+        <form [formGroup]="reporteForm" (ngSubmit)="generarReporteVisitas()">
+          <div class="filtros-header">
+            <h3>Filtros de Búsqueda</h3>
+            <p>Selecciona los parámetros para generar el reporte de visitas pendientes</p>
+          </div>
+
+          <div class="filtros-grid">
+            <div class="campo-wrapper">
+              <mat-form-field appearance="outline" class="campo-completo">
+                <mat-label>País</mat-label>
+                <mat-select formControlName="pais" (selectionChange)="onPaisChange()">
+                  <mat-option *ngFor="let pais of paises" [value]="pais.codigo">
+                    {{ pais.nombre }}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matPrefix>public</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="campo-wrapper">
+              <mat-form-field appearance="outline" class="campo-completo">
+                <mat-label>Vendedor</mat-label>
+                <mat-select formControlName="vendedor" [disabled]="!paisSeleccionado() || cargandoVendedores()">
+                  <mat-option *ngIf="cargandoVendedores()" disabled>
+                    <mat-spinner diameter="20"></mat-spinner> Cargando vendedores...
+                  </mat-option>
+                  <mat-option *ngFor="let vendedor of vendedores()" [value]="vendedor.id">
+                    {{ vendedor.full_name }}
+                    <span class="vendedor-username">({{ vendedor.username }})</span>
+                  </mat-option>
+                </mat-select>
+                <mat-icon matPrefix>person</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="campo-wrapper">
+              <mat-form-field appearance="outline" class="campo-completo">
+                <mat-label>Fecha de Visitas</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="fecha" readonly>
+                <mat-icon matPrefix>calendar_today</mat-icon>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-hint>Selecciona la fecha para consultar las visitas</mat-hint>
+              </mat-form-field>
+            </div>
+
+            <div class="boton-wrapper">
+              <button
+                mat-raised-button
+                class="boton-generar"
+                type="submit"
+                [disabled]="!reporteForm.valid || cargandoVisitas()">
+                <mat-icon>{{ cargandoVisitas() ? 'sync' : 'assessment' }}</mat-icon>
+                <span>{{ cargandoVisitas() ? 'Generando...' : 'Generar Reporte' }}</span>
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Tabla de Resultados -->
+        <div class="resultados-container" *ngIf="visitas().length > 0">
+          <div class="resultados-header">
+            <div class="info-section">
+              <h3>Visitas de {{ getNombreVendedor(reporteForm.get('vendedor')?.value) }}</h3>
+              <p class="info-reporte">
+                País: {{ getNombrePais(reporteForm.get('pais')?.value) }} |
+                Fecha: {{ reporteForm.get('fecha')?.value | date:'dd/MM/yyyy' }} |
+                Total: {{ visitas().length }} visitas
+              </p>
+            </div>
+            <div class="acciones-section">
+              <button
+                mat-raised-button
+                class="boton-pdf"
+                (click)="generarPDF()">
+                <mat-icon>picture_as_pdf</mat-icon>
+                <span>Descargar PDF</span>
+              </button>
+            </div>
+          </div>
+
+          <mat-table [dataSource]="visitas()" class="mat-elevation-8">
+            <!-- Columna Cliente -->
+            <ng-container matColumnDef="cliente">
+              <mat-header-cell *matHeaderCellDef>Cliente</mat-header-cell>
+              <mat-cell *matCellDef="let visita">ID: {{ visita.id_cliente }}</mat-cell>
+            </ng-container>
+
+            <!-- Columna Dirección -->
+            <ng-container matColumnDef="direccion">
+              <mat-header-cell *matHeaderCellDef>Dirección</mat-header-cell>
+              <mat-cell *matCellDef="let visita">{{ visita.direccion }}</mat-cell>
+            </ng-container>
+
+            <!-- Columna Ciudad -->
+            <ng-container matColumnDef="ciudad">
+              <mat-header-cell *matHeaderCellDef>Ciudad</mat-header-cell>
+              <mat-cell *matCellDef="let visita">{{ visita.ciudad }}</mat-cell>
+            </ng-container>
+
+            <!-- Columna Contacto -->
+            <ng-container matColumnDef="contacto">
+              <mat-header-cell *matHeaderCellDef>Contacto</mat-header-cell>
+              <mat-cell *matCellDef="let visita">{{ visita.contacto }}</mat-cell>
+            </ng-container>
+
+            <!-- Columna Fecha -->
+            <ng-container matColumnDef="fecha">
+              <mat-header-cell *matHeaderCellDef>Fecha</mat-header-cell>
+              <mat-cell *matCellDef="let visita">{{ visita.fecha | date:'dd/MM/yyyy' }}</mat-cell>
+            </ng-container>
+
+            <!-- Columna Estado -->
+            <ng-container matColumnDef="estado">
+              <mat-header-cell *matHeaderCellDef>Estado</mat-header-cell>
+              <mat-cell *matCellDef="let visita">
+                <span class="estado-badge" [class.pendiente]="visita.estado === 'pendiente'">
+                  {{ visita.estado | titlecase }}
+                </span>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="visitasColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: visitasColumns;"></mat-row>
+          </mat-table>
+        </div>
+
+        <!-- Mensaje cuando no hay resultados -->
+        <div class="sin-resultados" *ngIf="visitas().length === 0 && reporteForm.get('fecha')?.value && !cargandoVisitas()">
+          <mat-icon>info</mat-icon>
+          <p>No se encontraron visitas para los filtros seleccionados.</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Tabs futuros para otros reportes -->
+    <mat-tab label="Otros Reportes" disabled>
+      <div class="tab-content">
+        <p class="tab-placeholder">Próximamente: Reportes de ventas, productos más vendidos, etc.</p>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
 </div>
