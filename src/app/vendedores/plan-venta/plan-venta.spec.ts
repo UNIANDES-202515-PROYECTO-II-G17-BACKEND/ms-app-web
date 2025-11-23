@@ -166,6 +166,7 @@ describe('PlanVenta - Unit Tests', () => {
   });
 
   it('debe manejar error al cargar vendedores', (done) => {
+    spyOn(console, 'error');
     mockPlanVentaService.obtenerVendedores.and.returnValue(throwError(() => new Error('Error')));
 
     component.cargarVendedores();
@@ -173,11 +174,13 @@ describe('PlanVenta - Unit Tests', () => {
     setTimeout(() => {
       expect(component.state.loadingVendedores).toBeFalse();
       expect(component.state.error).toBe('Error al cargar los vendedores');
+      expect(console.error).toHaveBeenCalledWith('Error al cargar vendedores:', jasmine.any(Error));
       done();
     }, 10);
   });
 
   it('debe manejar error al cargar productos', (done) => {
+    spyOn(console, 'error');
     mockPlanVentaService.obtenerProductos.and.returnValue(throwError(() => new Error('Error')));
 
     component.cargarProductos();
@@ -185,11 +188,13 @@ describe('PlanVenta - Unit Tests', () => {
     setTimeout(() => {
       expect(component.state.loadingProductos).toBeFalse();
       expect(component.state.error).toBe('Error al cargar los productos');
+      expect(console.error).toHaveBeenCalledWith('Error al cargar productos:', jasmine.any(Error));
       done();
     }, 10);
   });
 
   it('debe manejar error al cargar clientes', (done) => {
+    spyOn(console, 'error');
     mockPlanVentaService.obtenerClientesInstitucionales.and.returnValue(throwError(() => new Error('Error')));
 
     component.cargarClientes();
@@ -197,6 +202,7 @@ describe('PlanVenta - Unit Tests', () => {
     setTimeout(() => {
       expect(component.state.loadingClientes).toBeFalse();
       expect(component.state.error).toBe('Error al cargar los clientes institucionales');
+      expect(console.error).toHaveBeenCalledWith('Error al cargar clientes:', jasmine.any(Error));
       done();
     }, 10);
   });
