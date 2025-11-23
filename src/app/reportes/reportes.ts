@@ -13,8 +13,6 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ReportesService } from './reportes.service';
 import { Vendedor, Visita, PlanVentaCompleto } from './reportes.interface';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-reportes',
@@ -139,7 +137,10 @@ export class Reportes {
     return this.planesVenta().filter(plan => !plan.activo).length;
   }
 
-  generarPDF(): void {
+  async generarPDF(): Promise<void> {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
+
     const doc = new jsPDF();
     const visitas = this.visitas();
     const vendedorNombre = this.getNombreVendedor(this.reporteForm.get('vendedor')?.value);
@@ -262,7 +263,10 @@ export class Reportes {
     return `${inicio} - ${fin}`;
   }
 
-  generarPDFPlanesVenta(): void {
+  async generarPDFPlanesVenta(): Promise<void> {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
+
     const doc = new jsPDF('l', 'mm', 'a4'); // Formato horizontal para más espacio
     const planes = this.planesVenta();
     const paisNombre = this.getNombrePais(this.paisSeleccionado());
