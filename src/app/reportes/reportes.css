@@ -1,452 +1,89 @@
-/* Contenedor principal de reportes con scroll simple */
-.reportes-scroll-container {
-  height: calc(100vh - 80px); /* Ajusta según el header de la app */
-  overflow-y: auto;
-  padding: 0;
-}
-
-/* Estilos generales */
-h2 {
-  color: #7c4dff !important;
-}
-
-mat-form-field {
-  width: 100%;
-}
-
-/* Form fields */
-::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline {margin-bottom:8px;font-size:16px}
-::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline .mdc-notched-outline__leading,
-::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline .mdc-notched-outline__notch,
-::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline .mdc-notched-outline__trailing {border-color:#d1d5db;border-width:1px}
-::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline.mat-focused .mdc-notched-outline__leading,
-::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline.mat-focused .mdc-notched-outline__notch,
-::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline.mat-focused .mdc-notched-outline__trailing {border-color:#7c4dff;border-width:2px}
-::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline .mat-mdc-form-field-label {color:#6b7280}
-::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline.mat-focused .mat-mdc-form-field-label {color:#7c4dff}
-::ng-deep .mat-mdc-form-field .mat-mdc-form-field-icon-prefix {color:#7c4dff;margin-right:12px}
-::ng-deep .mat-mdc-form-field .mdc-text-field--filled {background-color:transparent}
-
-/* Tabs */
-::ng-deep .reportes-content .mat-mdc-tab-group {margin-top:20px;height:100%;display:flex;flex-direction:column}
-::ng-deep .reportes-content .mat-mdc-tab-body-wrapper {flex:1}
-::ng-deep .reportes-content .mat-mdc-tab-body {height:auto}
-::ng-deep .mat-mdc-tab-header {background-color:#f8f9fa;border-radius:8px 8px 0 0;flex-shrink:0}
-::ng-deep .mat-mdc-tab {color:#6c757d}
-::ng-deep .mat-mdc-tab.mdc-tab--active {color:#7c4dff}
-::ng-deep .mat-mdc-tab-body-wrapper {border:1px solid #e0e0e0;border-top:none;border-radius:0 0 8px 8px}
-
-.tab-content {padding:24px;height:auto}
-.tab-placeholder {text-align:center;color:#6c757d;font-style:italic;margin-top:60px}
-
-.filtros-header {margin-bottom:24px;text-align:center}
-.filtros-header h3 {color:#7c4dff;margin:0 0 8px 0;font-size:20px;font-weight:600}
-.filtros-header p {color:#666;margin:0;font-size:14px}
-.filtros-grid {display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:32px;background:linear-gradient(145deg,#f8f9fa 0%,#ffffff 100%);border-radius:12px;border:1px solid #e9ecef;box-shadow:0 2px 12px rgba(124,77,255,0.08);margin-bottom:32px}
-
-.campo-wrapper {display:flex;flex-direction:column}
-.campo-completo {width:100%}
-.boton-wrapper {grid-column:1/-1;display:flex;justify-content:center;margin-top:16px}
-
-.boton-generar {
-  background-color: #7c4dff;
-  color: white;
-  padding: 12px 32px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 16px;
-  height: 48px;
-  min-width: 200px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(124, 77, 255, 0.3);
-}
-
-.boton-generar:hover:not(:disabled) {
-  background-color: #6a3de8;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(124, 77, 255, 0.4);
-}
-
-.boton-generar:disabled {
-  background-color: #cccccc;
-  color: #666666;
-  box-shadow: none;
-  transform: none;
-}
-
-.boton-generar mat-icon {
-  font-size: 20px !important;
-  width: 20px !important;
-  height: 20px !important;
-}
-
-.boton-generar mat-icon[class*="sync"] {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-
-::ng-deep .boton-primario.mat-mdc-button {
-  background-color: #7c4dff !important;
-  color: white !important;
-  border-radius: 6px !important;
-  padding: 10px 20px !important;
-  transition: all 0.3s ease !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-::ng-deep .boton-primario.mat-mdc-button:disabled {
-  background-color: #cccccc !important;
-  color: #666666 !important;
-  cursor: not-allowed !important;
-  opacity: 0.6 !important;
-}
-
-::ng-deep .boton-primario.mat-mdc-button:hover:not(:disabled) {
-  background-color: #6a3de8 !important;
-}
-
-/* Contenedor de resultados */
-.resultados-container {
-  margin-top: 32px;
-}
-
-.resultados-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 24px;
-  padding: 20px;
-  background: linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%);
-  border-radius: 8px;
-  border: 1px solid #e9ecef;
-}
-
-.info-section {
-  flex: 1;
-}
-
-.info-section h3 {
-  color: #7c4dff;
-  margin: 0 0 8px 0;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.info-reporte {
-  color: #6c757d;
-  font-size: 14px;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.acciones-section {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.boton-pdf {
-  background-color: #7c4dff !important;
-  color: white !important;
-  padding: 12px 32px !important;
-  border-radius: 8px !important;
-  font-weight: 600 !important;
-  font-size: 16px !important;
-  height: 48px !important;
-  min-width: 200px !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 4px 12px rgba(124, 77, 255, 0.3) !important;
-}
-
-.boton-pdf:hover {
-  background-color: #6a3de8 !important;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(124, 77, 255, 0.4) !important;
-}
-
-.boton-pdf mat-icon {
-  font-size: 20px !important;
-  width: 20px !important;
-  height: 20px !important;
-}
-
-/* Estilos para la tabla */
-.mat-mdc-table {
-  width: 100%;
-  margin-top: 16px;
-}
-
-::ng-deep .mat-mdc-table .mat-mdc-header-cell {
-  background-color: #7c4dff !important;
-  color: white !important;
-  font-weight: 600 !important;
-  font-size: 14px !important;
-  border-bottom: none !important;
-  padding: 16px 8px !important;
-  text-align: left !important;
-}
-
-::ng-deep .mat-mdc-table .mat-mdc-header-row {
-  background-color: #7c4dff !important;
-}
-
-::ng-deep .mat-mdc-table .mat-mdc-cell {
-  border-bottom: 1px solid #e0e0e0 !important;
-  padding: 12px 8px !important;
-  font-size: 14px;
-}
-
-::ng-deep .mat-mdc-table .mat-mdc-row:hover {
-  background-color: #f8f9fa !important;
-}
-
-/* Badge de estado */
-.estado-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  background-color: #e9ecef;
-  color: #495057;
-}
-
-.estado-badge.pendiente {
-  background-color: #fff3cd;
-  color: #856404;
-  border: 1px solid #ffeaa7;
-}
-
-/* Mensaje sin resultados */
-.sin-resultados {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 48px;
-  text-align: center;
-  color: #6c757d;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  margin-top: 32px;
-}
-
-.sin-resultados mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
-  margin-bottom: 16px;
-  color: #7c4dff;
-}
-
-.sin-resultados p {
-  margin: 0 0 8px 0;
-  font-size: 16px;
-}
-
-.sin-resultados h4 {
-  margin: 16px 0 8px 0;
-  color: #7c4dff;
-  font-size: 18px;
-}
-
-.sin-resultados small {
-  color: #888;
-  font-size: 14px;
-}
-
-/* Spinner en select */
-::ng-deep .mat-mdc-option mat-spinner {
-  margin-right: 8px;
-  vertical-align: middle;
-}
-
-/* Estilos específicos para planes de venta */
-.planes-grid {
-  grid-template-columns: 2fr 1fr;
-}
-
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px;
-  text-align: center;
-  color: #6c757d;
-}
-
-.loading-container p {
-  margin-top: 16px;
-  font-size: 14px;
-}
-
-.planes-table {
-  width: 100%;
-  font-size: 14px;
-}
-
-.periodo-badge {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.periodo-badge.mensual {
-  background-color: #e3f2fd;
-  color: #1565c0;
-}
-
-.periodo-badge.bimestral {
-  background-color: #f3e5f5;
-  color: #7b1fa2;
-}
-
-.periodo-badge.trimestral {
-  background-color: #e8f5e8;
-  color: #2e7d32;
-}
-
-.periodo-badge.semestral {
-  background-color: #fff3e0;
-  color: #ef6c00;
-}
-
-.periodo-badge.anual {
-  background-color: #ffebee;
-  color: #c62828;
-}
-
-.monto {
-  font-weight: 600;
-  color: #2e7d32;
-}
-
-.productos-count {
-  display: inline-block;
-  margin-right: 4px;
-}
-
-.productos-tooltip {
-  display: inline-block;
-  cursor: help;
-}
-
-.productos-tooltip mat-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-  color: #7c4dff;
-}
-
-.fechas-container {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-}
-
-.fechas-container small {
-  color: #666;
-}
-
-.estado-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.estado-badge.activo {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.estado-badge.inactivo {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-
-/* Responsividad */
-@media (max-width: 768px) {
-  .filtros-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 24px 20px;
-  }
-
-  .campo-wrapper {
-    width: 100%;
-  }
-
-  .boton-wrapper {
-    grid-column: 1;
-    margin-top: 8px;
-  }
-
-  .boton-generar {
-    min-width: 100% !important;
-    justify-content: center !important;
-  }
-
-  .planes-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .resultados-header {
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
-  }
-
-  .acciones-section {
-    justify-content: center;
-  }
-
-  .boton-pdf {
-    min-width: 200px !important;
-    justify-content: center !important;
-  }
-
-  .planes-table {
-    font-size: 12px;
-  }
-
-  .tab-content {
-    padding: 16px;
-  }
-
-  ::ng-deep .mat-mdc-table {
-    font-size: 12px;
-  }
-
-  ::ng-deep .mat-mdc-table .mat-mdc-cell,
-  ::ng-deep .mat-mdc-table .mat-mdc-header-cell {
-    padding: 8px 4px !important;
-    font-size: 12px !important;
-  }
+.reportes-scroll-container{height:calc(100vh - 80px);overflow-y:auto;padding:0}
+h2{color:#7c4dff!important}
+mat-form-field{width:100%}
+::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline{margin-bottom:8px;font-size:16px}
+::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline .mdc-notched-outline__leading,::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline .mdc-notched-outline__notch,::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline .mdc-notched-outline__trailing{border-color:#d1d5db;border-width:1px}
+::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline.mat-focused .mdc-notched-outline__leading,::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline.mat-focused .mdc-notched-outline__notch,::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline.mat-focused .mdc-notched-outline__trailing{border-color:#7c4dff;border-width:2px}
+::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline .mat-mdc-form-field-label{color:#6b7280}
+::ng-deep .mat-mdc-form-field.mat-form-field-appearance-outline.mat-focused .mat-mdc-form-field-label{color:#7c4dff}
+::ng-deep .mat-mdc-form-field .mat-mdc-form-field-icon-prefix{color:#7c4dff;margin-right:12px}
+::ng-deep .mat-mdc-form-field .mdc-text-field--filled{background-color:transparent}
+::ng-deep .reportes-content .mat-mdc-tab-group{margin-top:20px;height:100%;display:flex;flex-direction:column}
+::ng-deep .reportes-content .mat-mdc-tab-body-wrapper{flex:1}
+::ng-deep .reportes-content .mat-mdc-tab-body{height:auto}
+::ng-deep .mat-mdc-tab-header{background-color:#f8f9fa;border-radius:8px 8px 0 0;flex-shrink:0}
+::ng-deep .mat-mdc-tab{color:#6c757d}
+::ng-deep .mat-mdc-tab.mdc-tab--active{color:#7c4dff}
+::ng-deep .mat-mdc-tab-body-wrapper{border:1px solid #e0e0e0;border-top:none;border-radius:0 0 8px 8px}
+.tab-content{padding:24px;height:auto}
+.tab-placeholder{text-align:center;color:#6c757d;font-style:italic;margin-top:60px}
+.filtros-header{margin-bottom:24px;text-align:center}
+.filtros-header h3{color:#7c4dff;margin:0 0 8px 0;font-size:20px;font-weight:600}
+.filtros-header p{color:#666;margin:0;font-size:14px}
+.filtros-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:32px;background:linear-gradient(145deg,#f8f9fa 0%,#ffffff 100%);border-radius:12px;border:1px solid #e9ecef;box-shadow:0 2px 12px rgba(124,77,255,0.08);margin-bottom:32px}
+.campo-wrapper{display:flex;flex-direction:column}
+.campo-completo{width:100%}
+.boton-wrapper{grid-column:1/-1;display:flex;justify-content:center;margin-top:16px}
+.boton-generar{background-color:#7c4dff;color:white;padding:12px 32px;border-radius:8px;font-weight:600;font-size:16px;height:48px;min-width:200px;display:flex;align-items:center;gap:8px;transition:all 0.3s ease;box-shadow:0 4px 12px rgba(124,77,255,0.3)}
+.boton-generar:hover:not(:disabled){background-color:#6a3de8;transform:translateY(-2px);box-shadow:0 6px 16px rgba(124,77,255,0.4)}
+.boton-generar:disabled{background-color:#cccccc;color:#666666;box-shadow:none;transform:none}
+.boton-generar mat-icon{font-size:20px!important;width:20px!important;height:20px!important}
+.boton-generar mat-icon[class*="sync"]{animation:spin 1s linear infinite}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+::ng-deep .boton-primario.mat-mdc-button{background-color:#7c4dff!important;color:white!important;border-radius:6px!important;padding:10px 20px!important;transition:all 0.3s ease!important;border:none!important;box-shadow:none!important}
+::ng-deep .boton-primario.mat-mdc-button:disabled{background-color:#cccccc!important;color:#666666!important;cursor:not-allowed!important;opacity:0.6!important}
+::ng-deep .boton-primario.mat-mdc-button:hover:not(:disabled){background-color:#6a3de8!important}
+.resultados-container{margin-top:32px}
+.resultados-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding:20px;background:linear-gradient(145deg,#f8f9fa 0%,#ffffff 100%);border-radius:8px;border:1px solid #e9ecef}
+.info-section{flex:1}
+.info-section h3{color:#7c4dff;margin:0 0 8px 0;font-size:18px;font-weight:600}
+.info-reporte{color:#6c757d;font-size:14px;margin:0;display:flex;align-items:center;gap:8px}
+.acciones-section{display:flex;gap:12px;align-items:center}
+.boton-pdf{background-color:#7c4dff!important;color:white!important;padding:12px 32px!important;border-radius:8px!important;font-weight:600!important;font-size:16px!important;height:48px!important;min-width:200px!important;display:flex!important;align-items:center!important;gap:8px!important;transition:all 0.3s ease!important;box-shadow:0 4px 12px rgba(124,77,255,0.3)!important}
+.boton-pdf:hover{background-color:#6a3de8!important;transform:translateY(-2px);box-shadow:0 6px 16px rgba(124,77,255,0.4)!important}
+.boton-pdf mat-icon{font-size:20px!important;width:20px!important;height:20px!important}
+.mat-mdc-table{width:100%;margin-top:16px}
+::ng-deep .mat-mdc-table .mat-mdc-header-cell{background-color:#7c4dff!important;color:white!important;font-weight:600!important;font-size:14px!important;border-bottom:none!important;padding:16px 8px!important;text-align:left!important}
+::ng-deep .mat-mdc-table .mat-mdc-header-row{background-color:#7c4dff!important}
+::ng-deep .mat-mdc-table .mat-mdc-cell{border-bottom:1px solid #e0e0e0!important;padding:12px 8px!important;font-size:14px}
+::ng-deep .mat-mdc-table .mat-mdc-row:hover{background-color:#f8f9fa!important}
+.estado-badge{display:inline-block;padding:4px 12px;border-radius:16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;background-color:#e9ecef;color:#495057}
+.estado-badge.pendiente{background-color:#fff3cd;color:#856404;border:1px solid #ffeaa7}
+.estado-badge.activo{background-color:#d4edda;color:#155724;border:1px solid #c3e6cb}
+.estado-badge.inactivo{background-color:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
+.sin-resultados{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px;text-align:center;color:#6c757d;background-color:#f8f9fa;border-radius:8px;margin-top:32px}
+.sin-resultados mat-icon{font-size:48px;width:48px;height:48px;margin-bottom:16px;color:#7c4dff}
+.sin-resultados p{margin:0 0 8px 0;font-size:16px}
+.sin-resultados h4{margin:16px 0 8px 0;color:#7c4dff;font-size:18px}
+.sin-resultados small{color:#888;font-size:14px}
+::ng-deep .mat-mdc-option mat-spinner{margin-right:8px;vertical-align:middle}
+.planes-grid{grid-template-columns:2fr 1fr}
+.loading-container{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;text-align:center;color:#6c757d}
+.loading-container p{margin-top:16px;font-size:14px}
+.planes-table{width:100%;font-size:14px}
+.periodo-badge{display:inline-block;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.periodo-badge.mensual{background-color:#e3f2fd;color:#1565c0}
+.periodo-badge.bimestral{background-color:#f3e5f5;color:#7b1fa2}
+.periodo-badge.trimestral{background-color:#e8f5e8;color:#2e7d32}
+.periodo-badge.semestral{background-color:#fff3e0;color:#ef6c00}
+.periodo-badge.anual{background-color:#ffebee;color:#c62828}
+.monto{font-weight:600;color:#2e7d32}
+.productos-count{display:inline-block;margin-right:4px}
+.productos-tooltip{display:inline-block;cursor:help}
+.productos-tooltip mat-icon{font-size:16px;width:16px;height:16px;color:#7c4dff}
+.fechas-container{display:flex;flex-direction:column;line-height:1.2}
+.fechas-container small{color:#666}
+@media (max-width:768px){
+.filtros-grid{grid-template-columns:1fr;gap:20px;padding:24px 20px}
+.campo-wrapper{width:100%}
+.boton-wrapper{grid-column:1;margin-top:8px}
+.boton-generar{min-width:100%!important;justify-content:center!important}
+.planes-grid{grid-template-columns:1fr}
+.resultados-header{flex-direction:column;gap:16px;align-items:stretch}
+.acciones-section{justify-content:center}
+.boton-pdf{min-width:200px!important;justify-content:center!important}
+.planes-table{font-size:12px}
+.tab-content{padding:16px}
+::ng-deep .mat-mdc-table{font-size:12px}
+::ng-deep .mat-mdc-table .mat-mdc-cell,::ng-deep .mat-mdc-table .mat-mdc-header-cell{padding:8px 4px!important;font-size:12px!important}
 }
